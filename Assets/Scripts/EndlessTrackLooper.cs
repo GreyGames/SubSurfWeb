@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,14 +15,33 @@ public class EndlessTrackLooper : MonoBehaviour
     [SerializeField] private float startSpeed = 10f;
     [SerializeField] private float maxSpeed = 26f;
     [SerializeField] private float acceleration = 0.35f;
+    [SerializeField] private bool ensureTrackSegmentComponent = true;
     [SerializeField] private bool autoFindSegmentsFromChildren = true;
+    [SerializeField] private bool autoCreateSideEnvironmentSpawner = true;
     [SerializeField] private List<Transform> segments = new List<Transform>();
+
+    [Header("Visual - Distance Fog")]
+    [SerializeField] private bool applyFog = true;
+    [SerializeField] private FogMode fogMode = FogMode.Linear;
+    [SerializeField] private Color fogColor = new Color(0.75f, 0.8f, 0.88f, 1f);
+    [SerializeField] private float fogStartDistance = 45f;
+    [SerializeField] private float fogEndDistance = 130f;
+    [SerializeField] private float fogDensity = 0.012f;
 
     private readonly System.Random rng = new System.Random();
     private Vector3 moveAxis;
     private Vector3 spawnAxis;
     private float currentSpeed;
     private bool paused;
+
+    public event System.Action<Transform> SegmentRepositioned;
+    public IReadOnlyList<Transform> Segments => segments;
+    public Transform StartPoint => startPoint;
+    public Transform EndPoint => endPoint;
+    public Vector3 MoveAxis => moveAxis;
+    public Vector3 SpawnAxis => spawnAxis;
+    public float CurrentSpeed => paused ? 0f : currentSpeed;
+    public bool IsPaused => paused;
 
     private void Awake()
     {
@@ -44,15 +62,32 @@ public class EndlessTrackLooper : MonoBehaviour
                     continue;
                 }
 
+                // Terrain should never be treated as a recyclable segment.
+                if (child.GetComponent("Terrain") != null || child.GetComponent("TerrainCollider") != null)
+                {
+                    continue;
+                }
+
                 segments.Add(child);
             }
         }
 
         currentSpeed = startSpeed;
+
+        if (ensureTrackSegmentComponent)
+        {
+            EnsureTrackSegments();
+        }
+
+        if (autoCreateSideEnvironmentSpawner && GetComponent<SideEnvironmentSpawner>() == null)
+        {
+            gameObject.AddComponent<SideEnvironmentSpawner>();
+        }
     }
 
     private void Start()
     {
+        ApplyFogSettings();
         AlignSegmentsFromStart();
     }
 
@@ -101,11 +136,13 @@ public class EndlessTrackLooper : MonoBehaviour
             seg.position = new Vector3(pos.x, seg.position.y, pos.z);
             seg.rotation = Quaternion.identity;
 
-            TrackSegment segmentData = seg.GetComponent<TrackSegment>();
+            TrackSegment segmentData = GetTrackSegment(seg);
             if (segmentData != null)
             {
-                segmentData.OnRecycled(rng);
+                segmentData.OnRecycled(rng, spawnAxis);
             }
+
+            NotifySegmentRepositioned(seg);
         }
     }
 
@@ -127,11 +164,13 @@ public class EndlessTrackLooper : MonoBehaviour
 
             seg.position += spawnAxis * delta;
 
-            TrackSegment segmentData = seg.GetComponent<TrackSegment>();
+            TrackSegment segmentData = GetTrackSegment(seg);
             if (segmentData != null)
             {
-                segmentData.OnRecycled(rng);
+                segmentData.OnRecycled(rng, spawnAxis);
             }
+
+            NotifySegmentRepositioned(seg);
         }
     }
 
@@ -148,6 +187,72 @@ public class EndlessTrackLooper : MonoBehaviour
         }
 
         return best;
+    }
+
+
+    private void ApplyFogSettings()
+    {
+        RenderSettings.fog = applyFog;
+        if (!applyFog)
+        {
+            return;
+        }
+
+        RenderSettings.fogColor = fogColor;
+        RenderSettings.fogMode = fogMode;
+
+        if (fogMode == FogMode.Linear)
+        {
+            RenderSettings.fogStartDistance = fogStartDistance;
+            RenderSettings.fogEndDistance = fogEndDistance;
+        }
+        else
+        {
+            RenderSettings.fogDensity = fogDensity;
+        }
+    }
+
+    private void EnsureTrackSegments()
+    {
+        for (int i = 0; i < segments.Count; i++)
+        {
+            Transform seg = segments[i];
+            if (seg == null)
+            {
+                continue;
+            }
+
+            if (seg.GetComponent<TrackSegment>() == null)
+            {
+                seg.gameObject.AddComponent<TrackSegment>();
+            }
+        }
+    }
+
+    private TrackSegment GetTrackSegment(Transform seg)
+    {
+        if (seg == null)
+        {
+            return null;
+        }
+
+        TrackSegment existing = seg.GetComponent<TrackSegment>();
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        if (!ensureTrackSegmentComponent)
+        {
+            return null;
+        }
+
+        return seg.gameObject.AddComponent<TrackSegment>();
+    }
+
+    private void NotifySegmentRepositioned(Transform seg)
+    {
+        SegmentRepositioned?.Invoke(seg);
     }
 
 #if UNITY_EDITOR
