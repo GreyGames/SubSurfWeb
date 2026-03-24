@@ -5,18 +5,35 @@ using UnityEngine;
 
 public static class ApplyWebGLSizePreset
 {
-    [MenuItem("Tools/Build/Apply Sub-10MB WebGL Preset")]
-    public static void ApplyFromMenu()
+    [MenuItem("Tools/Build/WebGL Preset/Release (Sub-10MB)")]
+    public static void ApplyReleaseFromMenu()
     {
-        Apply();
+        ApplyRelease();
     }
 
+    [MenuItem("Tools/Build/WebGL Preset/Local Dev (Chrome)")]
+    public static void ApplyLocalDevFromMenu()
+    {
+        ApplyLocalDev();
+    }
+
+    // Kept for CI/batchmode (backward compatible entrypoint).
     public static void ApplyFromBatchmode()
     {
-        Apply();
+        ApplyRelease();
     }
 
-    private static void Apply()
+    public static void ApplyReleaseFromBatchmode()
+    {
+        ApplyRelease();
+    }
+
+    public static void ApplyLocalDevFromBatchmode()
+    {
+        ApplyLocalDev();
+    }
+
+    private static void ApplyCommon()
     {
         PlayerSettings.stripEngineCode = true;
         PlayerSettings.gcIncremental = false;
@@ -25,6 +42,12 @@ public static class ApplyWebGLSizePreset
         PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup.WebGL, ApiCompatibilityLevel.NET_Standard);
         PlayerSettings.SetManagedStrippingLevel(BuildTargetGroup.WebGL, ManagedStrippingLevel.High);
         PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup.WebGL, Il2CppCompilerConfiguration.Release);
+        SetOptionalWebGLBool("wasm2023", true);
+    }
+
+    private static void ApplyRelease()
+    {
+        ApplyCommon();
 
         PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
         PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.None;
@@ -36,10 +59,27 @@ public static class ApplyWebGLSizePreset
         PlayerSettings.WebGL.decompressionFallback = false;
         PlayerSettings.WebGL.threadsSupport = false;
 
-        SetOptionalWebGLBool("wasm2023", true);
+        AssetDatabase.SaveAssets();
+        Debug.Log("[ApplyWebGLSizePreset] Applied RELEASE WebGL preset (Brotli, no fallback).");
+    }
+
+    private static void ApplyLocalDev()
+    {
+        ApplyCommon();
+
+        // Local-friendly settings so simple localhost servers work in Chrome.
+        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+        PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.ExplicitlyThrownExceptionsOnly;
+#pragma warning disable 618
+        PlayerSettings.WebGL.debugSymbols = true;
+#pragma warning restore 618
+        PlayerSettings.WebGL.nameFilesAsHashes = false;
+        PlayerSettings.WebGL.dataCaching = false;
+        PlayerSettings.WebGL.decompressionFallback = true;
+        PlayerSettings.WebGL.threadsSupport = false;
 
         AssetDatabase.SaveAssets();
-        Debug.Log("[ApplyWebGLSizePreset] Applied WebGL min-size settings.");
+        Debug.Log("[ApplyWebGLSizePreset] Applied LOCAL DEV WebGL preset (no compression).");
     }
 
     private static void SetOptionalWebGLBool(string propertyName, bool value)
