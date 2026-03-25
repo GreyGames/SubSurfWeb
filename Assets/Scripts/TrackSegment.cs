@@ -25,7 +25,7 @@ public class TrackSegment : MonoBehaviour
     [Header("Slow Motion Zone")]
     [SerializeField] private bool enableSlowMoZone = true;
     [Range(0f, 1f)]
-    [SerializeField] private float slowMoZoneChance = 0.12f;
+    [SerializeField] private float slowMoZoneChance = 0.4f;
     [SerializeField] private Vector2 slowMoZoneForwardRange = new Vector2(3f, 9f);
     [SerializeField] private Vector3 slowMoZoneSize = new Vector3(5f, 3f, 5f);
     [SerializeField] private bool autoSizeSlowMoToLane = true;

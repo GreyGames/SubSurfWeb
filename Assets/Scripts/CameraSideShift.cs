@@ -8,7 +8,7 @@ public class CameraSideShift : MonoBehaviour
     [SerializeField] private float transitionSpeed = 5f;
     [SerializeField] private bool lookAtTarget = true;
     [SerializeField] private float sideHeightOffset = -0.4f;
-    [SerializeField] private float orbitDegreesPerSecond = 360f;
+    [SerializeField] private float orbitDegreesPerSecond = 280f;
     [SerializeField] private float orbitHeightOffset = 0f;
     [SerializeField] private bool followTargetWhenInactive = true;
     [SerializeField] private bool followInactiveX = true;
@@ -92,6 +92,10 @@ public class CameraSideShift : MonoBehaviour
     public void SetSideActive(bool active, float newSideSign = 1f)
     {
         sideActive = active;
+        if (active)
+        {
+            orbitActive = false;
+        }
         if (Mathf.Abs(newSideSign) > 0.001f)
         {
             sideSign = Mathf.Sign(newSideSign);
@@ -105,6 +109,10 @@ public class CameraSideShift : MonoBehaviour
             orbitYaw = 0f;
         }
         orbitActive = active;
+        if (active)
+        {
+            sideActive = false;
+        }
         if (Mathf.Abs(newOrbitSign) > 0.001f)
         {
             orbitSign = Mathf.Sign(newOrbitSign);
