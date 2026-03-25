@@ -2499,7 +2499,7 @@ MonoBehaviour:
   tapMaxDuration: 0.22
   jumpKey: 32
   jumpHeight: 4
-  gravity: -28
+  gravity: -40
   groundSnapVelocity: -2
   animator: {fileID: 0}
   autoFindAnimator: 1

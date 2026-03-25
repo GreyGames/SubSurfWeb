@@ -12,6 +12,8 @@ public class SlowMoZone : MonoBehaviour
     private int overlapCount;
     private bool isActive;
     private float cameraSideSign = 1f;
+    private bool useCameraOrbit;
+    private float cameraOrbitSign = 1f;
     private bool pendingDeactivate;
     private float pendingDeactivateAt;
     private float minActiveUntil;
@@ -91,7 +93,31 @@ public class SlowMoZone : MonoBehaviour
         if (Mathf.Abs(sideSign) > 0.001f)
         {
             cameraSideSign = Mathf.Sign(sideSign);
+            useCameraOrbit = false;
             if (isActive && cameraShift != null)
+            {
+                cameraShift.SetSideActive(true, cameraSideSign);
+                cameraShift.SetOrbitActive(false);
+            }
+        }
+    }
+
+    public void SetCameraOrbit(bool orbit, float orbitSign = 1f)
+    {
+        useCameraOrbit = orbit;
+        if (Mathf.Abs(orbitSign) > 0.001f)
+        {
+            cameraOrbitSign = Mathf.Sign(orbitSign);
+        }
+
+        if (isActive && cameraShift != null)
+        {
+            cameraShift.SetOrbitActive(useCameraOrbit, cameraOrbitSign);
+            if (useCameraOrbit)
+            {
+                cameraShift.SetSideActive(false, cameraSideSign);
+            }
+            else
             {
                 cameraShift.SetSideActive(true, cameraSideSign);
             }
@@ -114,7 +140,16 @@ public class SlowMoZone : MonoBehaviour
 
         if (cameraShift != null)
         {
-            cameraShift.SetSideActive(true, cameraSideSign);
+            if (useCameraOrbit)
+            {
+                cameraShift.SetOrbitActive(true, cameraOrbitSign);
+                cameraShift.SetSideActive(false, cameraSideSign);
+            }
+            else
+            {
+                cameraShift.SetSideActive(true, cameraSideSign);
+                cameraShift.SetOrbitActive(false, cameraOrbitSign);
+            }
         }
     }
 
@@ -130,6 +165,7 @@ public class SlowMoZone : MonoBehaviour
 
         if (cameraShift != null)
         {
+            cameraShift.SetOrbitActive(false, cameraOrbitSign);
             cameraShift.SetSideActive(false, cameraSideSign);
         }
     }

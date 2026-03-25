@@ -8,6 +8,8 @@ public class CameraSideShift : MonoBehaviour
     [SerializeField] private float transitionSpeed = 5f;
     [SerializeField] private bool lookAtTarget = true;
     [SerializeField] private float sideHeightOffset = -0.4f;
+    [SerializeField] private float orbitDegreesPerSecond = 360f;
+    [SerializeField] private float orbitHeightOffset = 0f;
     [SerializeField] private bool followTargetWhenInactive = true;
     [SerializeField] private bool followInactiveX = true;
     [SerializeField] private bool followInactiveY = false;
@@ -20,6 +22,9 @@ public class CameraSideShift : MonoBehaviour
     private Vector3 restTargetPosition;
     private bool sideActive;
     private float sideSign = 1f;
+    private bool orbitActive;
+    private float orbitSign = 1f;
+    private float orbitYaw;
     private bool hasSetup;
 
     private void Awake()
@@ -34,17 +39,22 @@ public class CameraSideShift : MonoBehaviour
             return;
         }
 
-        float signedYaw = sideYawDegrees * sideSign;
-        Vector3 desiredOffset = sideActive
-            ? Quaternion.Euler(0f, signedYaw, 0f) * defaultOffset
-            : defaultOffset;
-        if (sideActive)
+        Vector3 desiredOffset = defaultOffset;
+        if (orbitActive)
         {
+            orbitYaw += orbitDegreesPerSecond * orbitSign * Time.unscaledDeltaTime;
+            desiredOffset = Quaternion.Euler(0f, orbitYaw, 0f) * defaultOffset;
+            desiredOffset.y += orbitHeightOffset;
+        }
+        else if (sideActive)
+        {
+            float signedYaw = sideYawDegrees * sideSign;
+            desiredOffset = Quaternion.Euler(0f, signedYaw, 0f) * defaultOffset;
             desiredOffset.y += sideHeightOffset;
         }
 
         Vector3 desiredPos;
-        if (sideActive)
+        if (orbitActive || sideActive)
         {
             desiredPos = target.position + desiredOffset;
         }
@@ -65,7 +75,7 @@ public class CameraSideShift : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, desiredPos, t);
 
         Quaternion desiredRot;
-        if (sideActive || followTargetWhenInactive)
+        if (orbitActive || sideActive || followTargetWhenInactive)
         {
             desiredRot = lookAtTarget
                 ? Quaternion.LookRotation(target.position - transform.position, Vector3.up)
@@ -85,6 +95,19 @@ public class CameraSideShift : MonoBehaviour
         if (Mathf.Abs(newSideSign) > 0.001f)
         {
             sideSign = Mathf.Sign(newSideSign);
+        }
+    }
+
+    public void SetOrbitActive(bool active, float newOrbitSign = 1f)
+    {
+        if (active && !orbitActive)
+        {
+            orbitYaw = 0f;
+        }
+        orbitActive = active;
+        if (Mathf.Abs(newOrbitSign) > 0.001f)
+        {
+            orbitSign = Mathf.Sign(newOrbitSign);
         }
     }
 

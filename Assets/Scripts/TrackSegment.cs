@@ -35,6 +35,8 @@ public class TrackSegment : MonoBehaviour
     [SerializeField] private float slowMoZoneEdgePadding = 3f;
     [SerializeField] private bool slowMoZonePreferFrontHalf = false;
     [SerializeField] private int slowMoMinSegmentsBetween = 3;
+    [SerializeField] private bool slowMoIncludeCenterLane = true;
+    [SerializeField] private float slowMoCenterOrbitDirection = 1f;
     [SerializeField] private bool showSlowMoVisual = true;
     [SerializeField] private Color slowMoVisualColor = new Color(0.2f, 0.85f, 1f, 0.5f);
     [SerializeField] private float slowMoVisualHeight = 0.06f;
@@ -265,9 +267,34 @@ public class TrackSegment : MonoBehaviour
             return;
         }
 
-        bool leftLane = rng.Next(2) == 0;
-        float laneX = leftLane ? sortedLanes[0].x : sortedLanes[sortedLanes.Count - 1].x;
-        float cameraSide = leftLane ? -1f : 1f;
+        bool useOrbit = false;
+        float cameraSide = 1f;
+        float laneX;
+        if (slowMoIncludeCenterLane && sortedLanes.Count >= 3)
+        {
+            int choice = rng.Next(3); // 0=left, 1=middle, 2=right
+            if (choice == 1)
+            {
+                laneX = sortedLanes[1].x;
+                useOrbit = true;
+            }
+            else if (choice == 0)
+            {
+                laneX = sortedLanes[0].x;
+                cameraSide = -1f;
+            }
+            else
+            {
+                laneX = sortedLanes[sortedLanes.Count - 1].x;
+                cameraSide = 1f;
+            }
+        }
+        else
+        {
+            bool leftLane = rng.Next(2) == 0;
+            laneX = leftLane ? sortedLanes[0].x : sortedLanes[sortedLanes.Count - 1].x;
+            cameraSide = leftLane ? -1f : 1f;
+        }
 
         Vector3 zoneSize = slowMoZoneSize;
         if (autoSizeSlowMoToLane && sortedLanes.Count >= 2)
@@ -307,7 +334,11 @@ public class TrackSegment : MonoBehaviour
         slowMoZoneCollider.size = zoneSize;
         slowMoZoneCollider.center = new Vector3(0f, zoneSize.y * 0.5f - slowMoZoneLocalOffset.y, 0f);
         slowMoZone.SetSlowScale(slowMoTimeScale);
-        slowMoZone.SetCameraSideSign(cameraSide);
+        slowMoZone.SetCameraOrbit(useOrbit, slowMoCenterOrbitDirection);
+        if (!useOrbit)
+        {
+            slowMoZone.SetCameraSideSign(cameraSide);
+        }
         UpdateSlowMoVisual();
         slowMoZoneObject.SetActive(true);
 
