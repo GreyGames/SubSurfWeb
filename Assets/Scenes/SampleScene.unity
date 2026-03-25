@@ -216,7 +216,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.0071792603, y: -0.52011, z: 71.63841}
-  m_LocalScale: {x: 0.25, y: 1, z: 112.8704}
+  m_LocalScale: {x: 0.25, y: 1, z: 15.43366}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1121488367}
@@ -652,7 +652,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e3fa799e21b4c8479954c99f4cdcd65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EndlessTrackLooper
-  startPoint: {fileID: 964998140}
+  startPoint: {fileID: 1833174122}
   endPoint: {fileID: 1539055144}
   moveDirection: {x: 0, y: 0, z: -1}
   segmentLength: 20
@@ -1448,7 +1448,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.7428207, y: -0.52011, z: 71.63841}
-  m_LocalScale: {x: 0.25, y: 1, z: 112.8704}
+  m_LocalScale: {x: 0.25, y: 1, z: 15.43366}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1121488367}
@@ -1592,7 +1592,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -2.7166796, y: -0.52011, z: 71.63841}
-  m_LocalScale: {x: 0.25, y: 1, z: 112.8704}
+  m_LocalScale: {x: 0.25, y: 1, z: 15.43366}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1121488367}
@@ -2202,7 +2202,7 @@ Transform:
   m_GameObject: {fileID: 1833174121}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.313999, y: 0, z: 157.86}
+  m_LocalPosition: {x: 12.313999, y: 0, z: 19.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2378,8 +2378,11 @@ MonoBehaviour:
   laneLerpSpeed: 14
   lockZPosition: 1
   alsoUseArrowKeys: 1
+  enableTouchInput: 1
+  swipeMinDistance: 60
+  tapMaxDuration: 0.22
   jumpKey: 32
-  jumpHeight: 2.2
+  jumpHeight: 4
   gravity: -28
   groundSnapVelocity: -2
   animator: {fileID: 0}
@@ -2393,6 +2396,15 @@ MonoBehaviour:
   sprintForwardStateName: HumanM@Sprint01_Forward
   sprintLeftStateName: HumanM@Sprint01_ForwardLeft
   sprintRightStateName: HumanM@Sprint01_ForwardRight
+  enableDeathOnObstacle: 1
+  useTagCheck: 0
+  obstacleTag: Obstacle
+  useNamePrefixCheck: 1
+  obstacleNamePrefix: Obstacle
+  restartDelay: 0.1
+  useOverlapCheck: 1
+  overlapRadius: 0.45
+  overlapOffset: {x: 0, y: 0.9, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

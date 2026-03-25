@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RunnerLaneController : MonoBehaviour
 {
@@ -13,6 +14,13 @@ public class RunnerLaneController : MonoBehaviour
     [SerializeField] private float laneLerpSpeed = 14f;
     [SerializeField] private bool lockZPosition = true;
     [SerializeField] private bool alsoUseArrowKeys = true;
+
+    [Header("Touch Input")]
+    [SerializeField] private bool enableTouchInput = true;
+    [Tooltip("Minimum swipe distance in pixels before it counts as a swipe.")]
+    [SerializeField] private float swipeMinDistance = 60f;
+    [Tooltip("Tap time threshold in seconds.")]
+    [SerializeField] private float tapMaxDuration = 0.22f;
 
     [Header("Jump")]
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
@@ -33,6 +41,18 @@ public class RunnerLaneController : MonoBehaviour
     [SerializeField] private string sprintLeftStateName = "HumanM@Sprint01_ForwardLeft";
     [SerializeField] private string sprintRightStateName = "HumanM@Sprint01_ForwardRight";
 
+    [Header("Death/Restart")]
+    [SerializeField] private bool enableDeathOnObstacle = true;
+    [Tooltip("If true, check collider tag before name prefix.")]
+    [SerializeField] private bool useTagCheck = false;
+    [SerializeField] private string obstacleTag = "Obstacle";
+    [SerializeField] private bool useNamePrefixCheck = true;
+    [SerializeField] private string obstacleNamePrefix = "Obstacle";
+    [SerializeField] private float restartDelay = 0.1f;
+    [SerializeField] private bool useOverlapCheck = true;
+    [SerializeField] private float overlapRadius = 0.45f;
+    [SerializeField] private Vector3 overlapOffset = new Vector3(0f, 0.9f, 0f);
+
     private int laneIndex;
     private float fixedZ;
     private float fixedY;
@@ -49,6 +69,13 @@ public class RunnerLaneController : MonoBehaviour
     private int sprintRightStateHash;
     private int runtimeAnimatorLayerIndex;
     private float laneSwitchAnimTimer;
+    private Vector2 touchStartPos;
+    private float touchStartTime;
+    private bool touchTracking;
+    private bool isDead;
+    private Rigidbody cachedBody;
+    private Collider cachedCollider;
+    private readonly Collider[] overlapHits = new Collider[8];
 
     private void Awake()
     {
@@ -77,6 +104,7 @@ public class RunnerLaneController : MonoBehaviour
         }
 
         CacheAnimatorParams();
+        SetupDeathCollision();
     }
 
     private void Update()
@@ -85,6 +113,11 @@ public class RunnerLaneController : MonoBehaviour
 
         if (allowInput)
         {
+            if (enableTouchInput)
+            {
+                HandleTouchInput();
+            }
+
             bool leftPressed = Input.GetKeyDown(KeyCode.A) || (alsoUseArrowKeys && Input.GetKeyDown(KeyCode.LeftArrow));
             bool rightPressed = Input.GetKeyDown(KeyCode.D) || (alsoUseArrowKeys && Input.GetKeyDown(KeyCode.RightArrow));
 
@@ -123,6 +156,96 @@ public class RunnerLaneController : MonoBehaviour
 
         transform.position = p;
         UpdateAnimatorGroundedState();
+
+        if (enableDeathOnObstacle && useOverlapCheck && !isDead)
+        {
+            CheckOverlapForObstacles();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!enableDeathOnObstacle || isDead)
+        {
+            return;
+        }
+
+        if (IsObstacle(collision.collider))
+        {
+            DieAndRestart();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!enableDeathOnObstacle || isDead)
+        {
+            return;
+        }
+
+        if (IsObstacle(other))
+        {
+            DieAndRestart();
+        }
+    }
+
+    private void HandleTouchInput()
+    {
+        if (Input.touchCount == 0)
+        {
+            touchTracking = false;
+            return;
+        }
+
+        Touch touch = Input.GetTouch(0);
+        if (touch.phase == TouchPhase.Began)
+        {
+            touchTracking = true;
+            touchStartPos = touch.position;
+            touchStartTime = Time.unscaledTime;
+            return;
+        }
+
+        if (!touchTracking)
+        {
+            return;
+        }
+
+        if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+        {
+            Vector2 delta = touch.position - touchStartPos;
+            float duration = Time.unscaledTime - touchStartTime;
+
+            if (delta.magnitude < swipeMinDistance && duration <= tapMaxDuration)
+            {
+                TriggerJumpAnimation();
+                if (isGrounded)
+                {
+                    StartJump();
+                }
+            }
+            else
+            {
+                if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+                {
+                    if (delta.x < 0f) MoveLeft();
+                    else MoveRight();
+                }
+                else
+                {
+                    if (delta.y > 0f)
+                    {
+                        TriggerJumpAnimation();
+                        if (isGrounded)
+                        {
+                            StartJump();
+                        }
+                    }
+                }
+            }
+
+            touchTracking = false;
+        }
     }
 
     public void MoveLeft()
@@ -372,6 +495,111 @@ public class RunnerLaneController : MonoBehaviour
         }
 
         return bestIndex;
+    }
+
+    private void SetupDeathCollision()
+    {
+        if (!enableDeathOnObstacle)
+        {
+            return;
+        }
+
+        cachedBody = GetComponent<Rigidbody>();
+        if (cachedBody == null)
+        {
+            cachedBody = gameObject.AddComponent<Rigidbody>();
+        }
+
+        cachedBody.isKinematic = true;
+        cachedBody.useGravity = false;
+        cachedBody.interpolation = RigidbodyInterpolation.Interpolate;
+        cachedBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+
+        cachedCollider = GetComponent<Collider>();
+        if (cachedCollider is CapsuleCollider capsule)
+        {
+            overlapRadius = Mathf.Max(overlapRadius, capsule.radius * 0.9f);
+            overlapOffset = capsule.center;
+        }
+    }
+
+    private bool IsObstacle(Collider other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        if (useTagCheck && other.CompareTag(obstacleTag))
+        {
+            return true;
+        }
+
+        if (useNamePrefixCheck)
+        {
+            if (other.name.StartsWith(obstacleNamePrefix, System.StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            Transform root = other.transform.root;
+            if (root != null && root.name.StartsWith(obstacleNamePrefix, System.StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void DieAndRestart()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
+        LockInput(true);
+
+        if (restartDelay <= 0f)
+        {
+            RestartScene();
+            return;
+        }
+
+        Invoke(nameof(RestartScene), restartDelay);
+    }
+
+    private void RestartScene()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
+    }
+
+    private void CheckOverlapForObstacles()
+    {
+        Vector3 center = transform.TransformPoint(overlapOffset);
+        int count = Physics.OverlapSphereNonAlloc(center, overlapRadius, overlapHits, ~0, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < count; i++)
+        {
+            Collider hit = overlapHits[i];
+            if (hit == null || hit == cachedCollider)
+            {
+                continue;
+            }
+
+            if (hit.attachedRigidbody == cachedBody)
+            {
+                continue;
+            }
+
+            if (IsObstacle(hit))
+            {
+                DieAndRestart();
+                return;
+            }
+        }
     }
 }
 
