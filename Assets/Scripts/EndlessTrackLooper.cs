@@ -18,6 +18,8 @@ public class EndlessTrackLooper : MonoBehaviour
     [SerializeField] private bool ensureTrackSegmentComponent = true;
     [SerializeField] private bool autoFindSegmentsFromChildren = true;
     [SerializeField] private bool autoCreateSideEnvironmentSpawner = true;
+    [SerializeField] private bool autoCreateScoreManager = true;
+    [SerializeField] private bool autoCreateCameraSideShift = true;
     [SerializeField] private List<Transform> segments = new List<Transform>();
 
     [Header("Visual - Distance Fog")]
@@ -82,6 +84,20 @@ public class EndlessTrackLooper : MonoBehaviour
         if (autoCreateSideEnvironmentSpawner && GetComponent<SideEnvironmentSpawner>() == null)
         {
             gameObject.AddComponent<SideEnvironmentSpawner>();
+        }
+
+        if (autoCreateScoreManager && GetComponent<ScoreManager>() == null)
+        {
+            gameObject.AddComponent<ScoreManager>();
+        }
+
+        if (autoCreateCameraSideShift)
+        {
+            Camera main = Camera.main;
+            if (main != null && main.GetComponent<CameraSideShift>() == null)
+            {
+                main.gameObject.AddComponent<CameraSideShift>();
+            }
         }
     }
 
