@@ -52,6 +52,8 @@ public class RunnerLaneController : MonoBehaviour
     [SerializeField] private bool useOverlapCheck = true;
     [SerializeField] private float overlapRadius = 0.45f;
     [SerializeField] private Vector3 overlapOffset = new Vector3(0f, 0.9f, 0f);
+    [SerializeField] private bool useMarkerDistanceCheck = true;
+    [SerializeField] private float markerDistance = 0.9f;
 
     private int laneIndex;
     private float fixedZ;
@@ -160,6 +162,11 @@ public class RunnerLaneController : MonoBehaviour
         if (enableDeathOnObstacle && useOverlapCheck && !isDead)
         {
             CheckOverlapForObstacles();
+        }
+
+        if (enableDeathOnObstacle && useMarkerDistanceCheck && !isDead)
+        {
+            CheckMarkerDistance();
         }
     }
 
@@ -530,6 +537,11 @@ public class RunnerLaneController : MonoBehaviour
             return false;
         }
 
+        if (other.GetComponentInParent<ObstacleMarker>() != null)
+        {
+            return true;
+        }
+
         if (useTagCheck && other.CompareTag(obstacleTag))
         {
             return true;
@@ -595,6 +607,34 @@ public class RunnerLaneController : MonoBehaviour
             }
 
             if (IsObstacle(hit))
+            {
+                DieAndRestart();
+                return;
+            }
+        }
+    }
+
+    private void CheckMarkerDistance()
+    {
+        var active = ObstacleMarker.Active;
+        if (active == null || active.Count == 0)
+        {
+            return;
+        }
+
+        Vector3 center = transform.TransformPoint(overlapOffset);
+        float thresholdSqr = markerDistance * markerDistance;
+
+        for (int i = 0; i < active.Count; i++)
+        {
+            ObstacleMarker marker = active[i];
+            if (marker == null)
+            {
+                continue;
+            }
+
+            Vector3 delta = marker.transform.position - center;
+            if (delta.sqrMagnitude <= thresholdSqr)
             {
                 DieAndRestart();
                 return;

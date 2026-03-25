@@ -161,11 +161,27 @@ public class TrackSegment : MonoBehaviour
     {
         if (obstaclePrefab != null)
         {
-            return Instantiate(obstaclePrefab, transform);
+            GameObject instance = Instantiate(obstaclePrefab, transform);
+            EnsureObstacleMarker(instance);
+            return instance;
         }
 
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube.transform.SetParent(transform, false);
+        EnsureObstacleMarker(cube);
         return cube;
+    }
+
+    private static void EnsureObstacleMarker(GameObject instance)
+    {
+        if (instance == null)
+        {
+            return;
+        }
+
+        if (instance.GetComponent<ObstacleMarker>() == null)
+        {
+            instance.AddComponent<ObstacleMarker>();
+        }
     }
 }
