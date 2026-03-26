@@ -1609,7 +1609,7 @@ MonoBehaviour:
   autoSizeSlowMoToLane: 1
   slowMoLaneWidthScale: 0.85
   slowMoZoneLocalOffset: {x: 0, y: 1, z: 0}
-  slowMoTimeScale: 0.35
+  slowMoTimeScale: 0.4
   slowMoZoneEdgePadding: 3
   slowMoZonePreferFrontHalf: 0
   slowMoMinSegmentsBetween: 3
