@@ -209,7 +209,7 @@ MonoBehaviour:
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
-  slowMoVisualYOffset: 0.01
+  slowMoVisualYOffset: -0.5
 --- !u!1 &460903163
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,7 +300,7 @@ MonoBehaviour:
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
-  slowMoVisualYOffset: 0.01
+  slowMoVisualYOffset: -0.5
 --- !u!1 &490041190
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,10 +827,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   looper: {fileID: 0}
   autoFindLooper: 1
+  runner: {fileID: 0}
+  autoFindRunner: 1
   basePointsPerSecond: 6
   distancePerMultiplier: 90
   maxMultiplier: 10
   speedToPointsScale: 0.02
+  scoreOnlyWhileWorldMoving: 1
+  minSpeedToScore: 0.01
   showOnGUI: 1
   showMultiplier: 0
   hudOffset: {x: 12, y: 10}
@@ -963,6 +967,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1044,6 +1049,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2099421865}
   m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af4657232bb2414ca8ceaf89c83f214, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraSideShift
+  target: {fileID: 0}
+  autoFindTarget: 1
+  sideYawDegrees: 90
+  transitionSpeed: 5
+  lookAtTarget: 1
+  looper: {fileID: 0}
+  autoFindLooper: 1
+  scaleOrbitWithSpeed: 1
+  orbitSpeedReference: 10
+  minOrbitDegreesPerSecond: 360
+  maxOrbitDegreesPerSecond: 360
+  sideHeightOffset: -0.2
+  orbitDegreesPerSecond: 360
+  orbitHeightOffset: 0
+  orbitSingleRotation: 1
+  orbitSingleRotationDegrees: 360
+  followTargetWhenInactive: 1
+  followInactiveX: 1
+  followInactiveY: 0
+  followInactiveZ: 0
+  introActiveOnStart: 0
+  introYawDegrees: 225
+  introHeightOffset: 0
 --- !u!1 &964998139
 GameObject:
   m_ObjectHideFlags: 0
@@ -1618,7 +1658,7 @@ MonoBehaviour:
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
-  slowMoVisualYOffset: 0.01
+  slowMoVisualYOffset: -0.5
 --- !u!1 &1216275426
 GameObject:
   m_ObjectHideFlags: 0
@@ -2492,7 +2532,7 @@ MonoBehaviour:
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
-  slowMoVisualYOffset: 0.01
+  slowMoVisualYOffset: -0.5
 --- !u!1 &1833174121
 GameObject:
   m_ObjectHideFlags: 0

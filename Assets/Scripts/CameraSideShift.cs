@@ -8,10 +8,19 @@ public class CameraSideShift : MonoBehaviour
     [SerializeField] private float sideYawDegrees = 90f;
     [SerializeField] private float transitionSpeed = 5f;
     [SerializeField] private bool lookAtTarget = true;
+    [Header("Orbit Speed Scaling")]
+    [SerializeField] private EndlessTrackLooper looper;
+    [SerializeField] private bool autoFindLooper = true;
+    [SerializeField] private bool scaleOrbitWithSpeed = true;
+    [SerializeField] private float orbitSpeedReference = 10f;
+    [SerializeField] private float minOrbitDegreesPerSecond = 220f;
+    [SerializeField] private float maxOrbitDegreesPerSecond = 720f;
     [Header("Side / Orbit")]
     [SerializeField] private float sideHeightOffset = -0.4f;
     [SerializeField] private float orbitDegreesPerSecond = 280f;
     [SerializeField] private float orbitHeightOffset = 0f;
+    [SerializeField] private bool orbitSingleRotation = true;
+    [SerializeField] private float orbitSingleRotationDegrees = 360f;
     [Header("Inactive Follow")]
     [SerializeField] private bool followTargetWhenInactive = true;
     [SerializeField] private bool followInactiveX = true;
@@ -35,6 +44,7 @@ public class CameraSideShift : MonoBehaviour
     private bool orbitActive;
     private float orbitSign = 1f;
     private float orbitYaw;
+    private float orbitAccumDegrees;
     private bool introActive;
     private bool hasSetup;
 
@@ -70,7 +80,38 @@ public class CameraSideShift : MonoBehaviour
         Vector3 desiredOffset = defaultOffset;
         if (orbitActive)
         {
-            orbitYaw += orbitDegreesPerSecond * orbitSign * Time.unscaledDeltaTime;
+            float orbitSpeed = orbitDegreesPerSecond;
+            if (scaleOrbitWithSpeed)
+            {
+                float speed = looper != null ? looper.CurrentSpeed : 0f;
+                if (speed > 0f)
+                {
+                    float refSpeed = Mathf.Max(0.1f, orbitSpeedReference);
+                    orbitSpeed = orbitDegreesPerSecond * (speed / refSpeed);
+                }
+                orbitSpeed = Mathf.Clamp(orbitSpeed, minOrbitDegreesPerSecond, maxOrbitDegreesPerSecond);
+            }
+            float delta = orbitSpeed * orbitSign * Time.unscaledDeltaTime;
+            if (orbitSingleRotation)
+            {
+                float limit = Mathf.Max(1f, orbitSingleRotationDegrees);
+                float remaining = Mathf.Max(0f, limit - orbitAccumDegrees);
+                float deltaAbs = Mathf.Abs(delta);
+                if (remaining <= 0.0001f)
+                {
+                    delta = 0f;
+                }
+                else if (deltaAbs > remaining)
+                {
+                    delta = Mathf.Sign(delta) * remaining;
+                    orbitAccumDegrees = limit;
+                }
+                else
+                {
+                    orbitAccumDegrees += deltaAbs;
+                }
+            }
+            orbitYaw += delta;
             desiredOffset = Quaternion.Euler(0f, orbitYaw, 0f) * defaultOffset;
             desiredOffset.y += orbitHeightOffset;
         }
@@ -140,6 +181,7 @@ public class CameraSideShift : MonoBehaviour
         if (active && !orbitActive)
         {
             orbitYaw = 0f;
+            orbitAccumDegrees = 0f;
         }
         orbitActive = active;
         if (active)
@@ -177,6 +219,11 @@ public class CameraSideShift : MonoBehaviour
             {
                 target = runner.transform;
             }
+        }
+
+        if (autoFindLooper && looper == null)
+        {
+            looper = FindObjectOfType<EndlessTrackLooper>();
         }
 
         if (target == null)

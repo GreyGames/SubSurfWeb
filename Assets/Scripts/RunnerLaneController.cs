@@ -123,6 +123,8 @@ public class RunnerLaneController : MonoBehaviour
     private bool hitFlickerVisible = true;
     private int finalScore;
 
+    public bool IsGameOverActive => gameOverActive;
+
     private void Awake()
     {
         fixedZ = transform.position.z;

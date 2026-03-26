@@ -7,6 +7,8 @@ public class ScoreManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private EndlessTrackLooper looper;
     [SerializeField] private bool autoFindLooper = true;
+    [SerializeField] private RunnerLaneController runner;
+    [SerializeField] private bool autoFindRunner = true;
 
     [Header("Scoring")]
     [SerializeField] private float basePointsPerSecond = 6f;
@@ -30,6 +32,7 @@ public class ScoreManager : MonoBehaviour
     private float distance;
     private float currentMultiplier = 1f;
     private GUIStyle centeredStyle;
+    private GUIStyle leftStyle;
     private int centeredBaseFontSize;
 
     private void Awake()
@@ -45,6 +48,11 @@ public class ScoreManager : MonoBehaviour
         if (autoFindLooper && looper == null)
         {
             looper = FindObjectOfType<EndlessTrackLooper>();
+        }
+
+        if (autoFindRunner && runner == null)
+        {
+            runner = FindObjectOfType<RunnerLaneController>();
         }
     }
 
@@ -103,6 +111,11 @@ public class ScoreManager : MonoBehaviour
             return;
         }
 
+        if (runner != null && runner.IsGameOverActive)
+        {
+            return;
+        }
+
         if (centeredStyle == null)
         {
             centeredStyle = new GUIStyle(GUI.skin.label)
@@ -118,6 +131,10 @@ public class ScoreManager : MonoBehaviour
             {
                 centeredBaseFontSize = 14;
             }
+            leftStyle = new GUIStyle(centeredStyle)
+            {
+                alignment = TextAnchor.UpperLeft
+            };
         }
 
         Color previous = GUI.color;
@@ -126,7 +143,9 @@ public class ScoreManager : MonoBehaviour
         string scoreText = displayScore.ToString();
         string multText = $"x{currentMultiplier:0.0}";
 
-        centeredStyle.fontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
+        int hudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
+        centeredStyle.fontSize = hudFontSize;
+        leftStyle.fontSize = hudFontSize;
         float lineHeight = centeredStyle.fontSize + 6f;
         Rect safe = GetSafeAreaRect();
         float y = safe.y + hudOffset.y;
@@ -146,8 +165,9 @@ public class ScoreManager : MonoBehaviour
         }
 
         GUI.color = Color.black;
-        Rect r1 = new Rect(x, y, textWidth, lineHeight);
-        GUI.Label(r1, scoreText, centeredStyle);
+        float labelWidth = (safe.x + safe.width) - x;
+        Rect r1 = new Rect(x, y, Mathf.Max(textWidth, labelWidth), lineHeight);
+        GUI.Label(r1, scoreText, leftStyle);
         if (showMultiplier)
         {
             Rect r2 = new Rect(safe.x, y + lineHeight, safe.width, lineHeight);
