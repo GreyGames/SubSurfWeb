@@ -22,6 +22,24 @@ public class TrackSegment : MonoBehaviour
     [SerializeField] private bool obstacleZeroRotation = true;
     [SerializeField] private Vector3 obstacleLocalScale = Vector3.one;
 
+    [Header("Coin Line")]
+    [SerializeField] private bool enableCoinLine = true;
+    [Range(0f, 1f)]
+    [SerializeField] private float coinLineChance = 0.4f;
+    [SerializeField] private int coinMinSegmentsBetween = 1;
+    [SerializeField] private Vector2Int coinCountRange = new Vector2Int(6, 10);
+    [SerializeField] private float coinSpacing = 1.2f;
+    [SerializeField] private Vector2 coinForwardRange = new Vector2(3f, 10f);
+    [SerializeField] private float coinEdgePadding = 2f;
+    [SerializeField] private bool coinPreferFrontHalf = false;
+    [SerializeField] private bool coinPreferNearHalf = true;
+    [SerializeField] private float coinAvoidObstacleDistance = 3f;
+    [SerializeField] private GameObject coinPrefab;
+    [SerializeField] private Vector3 coinLocalOffset = new Vector3(0f, 1f, 0f);
+    [SerializeField] private Vector3 coinLocalScale = new Vector3(0.5f, 0.15f, 0.5f);
+    [SerializeField] private bool coinZeroRotation = true;
+    [SerializeField] private int coinValue = 1;
+
     [Header("Slow Motion Zone")]
     [SerializeField] private bool enableSlowMoZone = true;
     [Range(0f, 1f)]
@@ -51,6 +69,8 @@ public class TrackSegment : MonoBehaviour
     private MeshRenderer slowMoZoneRenderer;
     private Material slowMoZoneMaterial;
     private static int segmentsSinceSlowMo = 1000;
+    private static int segmentsSinceCoinLine = 1000;
+    private readonly List<CoinPickup> pooledCoins = new List<CoinPickup>(12);
 
     public void OnRecycled(System.Random rng)
     {
@@ -78,6 +98,7 @@ public class TrackSegment : MonoBehaviour
         }
 
         RandomizeObstacle(rng, worldSpawnAxis);
+        UpdateCoinLine(rng, worldSpawnAxis);
         UpdateSlowMoZone(rng);
     }
 
@@ -160,7 +181,7 @@ public class TrackSegment : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform child = transform.GetChild(i);
-            if (child == null || child.name == "Obstacle_Runtime" || child.name.StartsWith("SideBuilding_Runtime"))
+            if (child == null || child.name == "Obstacle_Runtime" || child.name == "Coin_Runtime" || child.name.StartsWith("SideBuilding_Runtime"))
             {
                 continue;
             }
@@ -344,6 +365,251 @@ public class TrackSegment : MonoBehaviour
 
     }
 
+    private void UpdateCoinLine(System.Random rng, Vector3 worldSpawnAxis)
+    {
+        if (!enableCoinLine)
+        {
+            DisableAllCoins();
+            return;
+        }
+
+        segmentsSinceCoinLine++;
+        if (segmentsSinceCoinLine < Mathf.Max(0, coinMinSegmentsBetween))
+        {
+            DisableAllCoins();
+            return;
+        }
+
+        bool shouldSpawn = rng.NextDouble() <= coinLineChance;
+        if (!shouldSpawn)
+        {
+            DisableAllCoins();
+            return;
+        }
+
+        segmentsSinceCoinLine = 0;
+
+        if (!TryBuildLaneCenters())
+        {
+            DisableAllCoins();
+            return;
+        }
+
+        List<Vector3> sortedLanes = GetSortedLaneLocalPositions();
+        if (sortedLanes.Count == 0)
+        {
+            DisableAllCoins();
+            return;
+        }
+
+        int minCount = Mathf.Max(1, Mathf.Min(coinCountRange.x, coinCountRange.y));
+        int maxCount = Mathf.Max(minCount, Mathf.Max(coinCountRange.x, coinCountRange.y));
+        int coinCount = rng.Next(minCount, maxCount + 1);
+        EnsureCoinPool(coinCount);
+
+        Vector3 localSpawnDirection = Vector3.forward;
+
+        float startMin = Mathf.Min(coinForwardRange.x, coinForwardRange.y);
+        float startMax = Mathf.Max(coinForwardRange.x, coinForwardRange.y);
+        float start = RandomRange(rng, coinForwardRange);
+        bool hasRange = TryGetSegmentLocalZRange(out float minZ, out float maxZ);
+        float totalLength = (coinCount - 1) * coinSpacing;
+
+        if (hasRange)
+        {
+            float mid = (minZ + maxZ) * 0.5f;
+            if (coinPreferNearHalf)
+            {
+                float nearStartMin = minZ + coinEdgePadding + startMin;
+                float nearStartMax = minZ + coinEdgePadding + startMax - totalLength;
+                if (nearStartMax > nearStartMin)
+                {
+                    startMin = nearStartMin;
+                    startMax = nearStartMax;
+                }
+            }
+            else if (coinPreferFrontHalf)
+            {
+                float padMin = minZ + coinEdgePadding;
+                float padMax = maxZ - coinEdgePadding - totalLength;
+                if (padMax > padMin)
+                {
+                    startMin = padMin;
+                    startMax = padMax;
+                }
+
+                float frontMin = startMin;
+                float frontMax = startMax;
+                frontMin = Mathf.Max(startMin, mid);
+
+                if (frontMax > frontMin)
+                {
+                    startMin = frontMin;
+                    startMax = frontMax;
+                }
+            }
+            else
+            {
+                float padMin = minZ + coinEdgePadding;
+                float padMax = maxZ - coinEdgePadding - totalLength;
+                if (padMax > padMin)
+                {
+                    startMin = padMin;
+                    startMax = padMax;
+                }
+            }
+        }
+
+        if (startMax <= startMin)
+        {
+            DisableAllCoins();
+            return;
+        }
+
+        start = RandomRange(rng, startMin, startMax);
+
+        int laneIndex = rng.Next(sortedLanes.Count);
+        Vector3 laneLocalPos = sortedLanes[laneIndex];
+
+        if (pooledObstacle != null && pooledObstacle.activeSelf && coinAvoidObstacleDistance > 0f)
+        {
+            Vector3 obstacleLocal = pooledObstacle.transform.localPosition;
+            int obstacleLane = GetClosestLaneIndex(obstacleLocal.x, sortedLanes);
+            if (laneIndex == obstacleLane)
+            {
+                float lineMid = start + totalLength * 0.5f;
+                if (Mathf.Abs(lineMid - obstacleLocal.z) < coinAvoidObstacleDistance)
+                {
+                    if (sortedLanes.Count > 1)
+                    {
+                        laneIndex = obstacleLane == 0 ? sortedLanes.Count - 1 : 0;
+                        laneLocalPos = sortedLanes[laneIndex];
+                    }
+                    else
+                    {
+                        float shift = Mathf.Sign(localSpawnDirection.z) * coinAvoidObstacleDistance;
+                        float shifted = start + shift;
+                        if (shifted >= startMin && shifted <= startMax)
+                        {
+                            start = shifted;
+                        }
+                        else
+                        {
+                            DisableAllCoins();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < pooledCoins.Count; i++)
+        {
+            CoinPickup coin = pooledCoins[i];
+            if (coin == null)
+            {
+                continue;
+            }
+
+            bool active = i < coinCount;
+            GameObject coinObj = coin.gameObject;
+            if (!active)
+            {
+                coinObj.SetActive(false);
+                continue;
+            }
+
+            Vector3 localPos = laneLocalPos + coinLocalOffset + localSpawnDirection * (start + i * coinSpacing);
+            coinObj.transform.localPosition = localPos;
+            if (coinZeroRotation)
+            {
+                coinObj.transform.localRotation = Quaternion.identity;
+            }
+            coinObj.transform.localScale = coinLocalScale;
+            coin.SetValue(coinValue);
+            coinObj.SetActive(true);
+        }
+    }
+
+    private void EnsureCoinPool(int count)
+    {
+        if (pooledCoins.Count >= count)
+        {
+            return;
+        }
+
+        while (pooledCoins.Count < count)
+        {
+            CoinPickup coin = CreateCoinInstance();
+            if (coin == null)
+            {
+                break;
+            }
+
+            pooledCoins.Add(coin);
+        }
+    }
+
+    private CoinPickup CreateCoinInstance()
+    {
+        GameObject instance;
+        if (coinPrefab != null)
+        {
+            instance = Instantiate(coinPrefab, transform);
+        }
+        else
+        {
+            instance = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            instance.transform.SetParent(transform, false);
+        }
+
+        instance.name = "Coin_Runtime";
+        Collider[] colliders = instance.GetComponentsInChildren<Collider>(true);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].isTrigger = true;
+        }
+
+        CoinPickup pickup = instance.GetComponent<CoinPickup>();
+        if (pickup == null)
+        {
+            pickup = instance.AddComponent<CoinPickup>();
+        }
+
+        return pickup;
+    }
+
+    private void DisableAllCoins()
+    {
+        for (int i = 0; i < pooledCoins.Count; i++)
+        {
+            CoinPickup coin = pooledCoins[i];
+            if (coin == null)
+            {
+                continue;
+            }
+
+            coin.gameObject.SetActive(false);
+        }
+    }
+
+    private static int GetClosestLaneIndex(float x, List<Vector3> lanes)
+    {
+        int bestIndex = 0;
+        float bestDist = float.MaxValue;
+        for (int i = 0; i < lanes.Count; i++)
+        {
+            float d = Mathf.Abs(lanes[i].x - x);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                bestIndex = i;
+            }
+        }
+
+        return bestIndex;
+    }
+
     private void EnsureSlowMoZone()
     {
         if (slowMoZoneObject != null)
@@ -455,7 +721,7 @@ public class TrackSegment : MonoBehaviour
             }
 
             string n = r.gameObject.name;
-            if (n == "SlowMoVisual" || n.StartsWith("Obstacle_Runtime") || n.StartsWith("SideBuilding_Runtime"))
+            if (n == "SlowMoVisual" || n.StartsWith("Obstacle_Runtime") || n.StartsWith("Coin_Runtime") || n.StartsWith("SideBuilding_Runtime"))
             {
                 continue;
             }

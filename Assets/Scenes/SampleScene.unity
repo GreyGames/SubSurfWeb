@@ -128,6 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 376474454}
+  - component: {fileID: 376474455}
   m_Layer: 0
   m_Name: Segment_01
   m_TagString: Untagged
@@ -153,6 +154,62 @@ Transform:
   - {fileID: 1440813272}
   m_Father: {fileID: 816899919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &376474455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376474453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84b6ecf8626cbe74d903a7b2ea4af030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSegment
+  layoutVariants: []
+  randomizeYaw: 0
+  yawOptions:
+  - 0
+  obstaclePrefab: {fileID: 0}
+  obstacleLaneCenters: []
+  autoDetectLaneCenters: 1
+  obstacleSpawnChance: 0.7
+  obstacleForwardDistanceRange: {x: 4, y: 10}
+  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleZeroRotation: 1
+  obstacleLocalScale: {x: 1, y: 1, z: 1}
+  enableCoinLine: 1
+  coinLineChance: 0.4
+  coinMinSegmentsBetween: 1
+  coinCountRange: {x: 6, y: 10}
+  coinSpacing: 1.2
+  coinForwardRange: {x: 3, y: 10}
+  coinEdgePadding: 2
+  coinPreferFrontHalf: 0
+  coinPreferNearHalf: 1
+  coinAvoidObstacleDistance: 3
+  coinPrefab: {fileID: 7194491603780009671, guid: 17b94b42735c891428ead0512445b163, type: 3}
+  coinLocalOffset: {x: 0, y: 1, z: 0}
+  coinLocalScale: {x: 1, y: 0.1, z: 1}
+  coinZeroRotation: 0
+  coinValue: 5
+  enableSlowMoZone: 1
+  slowMoZoneChance: 0.4
+  slowMoZoneForwardRange: {x: 3, y: 9}
+  slowMoZoneSize: {x: 5, y: 3, z: 5}
+  autoSizeSlowMoToLane: 1
+  slowMoLaneWidthScale: 0.85
+  slowMoZoneLocalOffset: {x: 0, y: 1, z: 0}
+  slowMoTimeScale: 0.35
+  slowMoZoneEdgePadding: 3
+  slowMoZonePreferFrontHalf: 0
+  slowMoMinSegmentsBetween: 3
+  slowMoIncludeCenterLane: 1
+  slowMoCenterOrbitDirection: 1
+  showSlowMoVisual: 1
+  slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
+  slowMoVisualHeight: 0.06
+  slowMoVisualYOffset: 0.01
 --- !u!1 &460903163
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,6 +219,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 460903164}
+  - component: {fileID: 460903165}
   m_Layer: 0
   m_Name: Segment_03
   m_TagString: Untagged
@@ -187,6 +245,62 @@ Transform:
   - {fileID: 879354099}
   m_Father: {fileID: 816899919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &460903165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 460903163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84b6ecf8626cbe74d903a7b2ea4af030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSegment
+  layoutVariants: []
+  randomizeYaw: 0
+  yawOptions:
+  - 0
+  obstaclePrefab: {fileID: 0}
+  obstacleLaneCenters: []
+  autoDetectLaneCenters: 1
+  obstacleSpawnChance: 0.7
+  obstacleForwardDistanceRange: {x: 4, y: 10}
+  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleZeroRotation: 1
+  obstacleLocalScale: {x: 1, y: 1, z: 1}
+  enableCoinLine: 1
+  coinLineChance: 0.4
+  coinMinSegmentsBetween: 1
+  coinCountRange: {x: 6, y: 10}
+  coinSpacing: 1.2
+  coinForwardRange: {x: 3, y: 10}
+  coinEdgePadding: 2
+  coinPreferFrontHalf: 0
+  coinPreferNearHalf: 1
+  coinAvoidObstacleDistance: 3
+  coinPrefab: {fileID: 7194491603780009671, guid: 17b94b42735c891428ead0512445b163, type: 3}
+  coinLocalOffset: {x: 0, y: 1, z: 0}
+  coinLocalScale: {x: 1, y: 0.1, z: 1}
+  coinZeroRotation: 0
+  coinValue: 5
+  enableSlowMoZone: 1
+  slowMoZoneChance: 0.4
+  slowMoZoneForwardRange: {x: 3, y: 9}
+  slowMoZoneSize: {x: 5, y: 3, z: 5}
+  autoSizeSlowMoToLane: 1
+  slowMoLaneWidthScale: 0.85
+  slowMoZoneLocalOffset: {x: 0, y: 1, z: 0}
+  slowMoTimeScale: 0.35
+  slowMoZoneEdgePadding: 3
+  slowMoZonePreferFrontHalf: 0
+  slowMoMinSegmentsBetween: 3
+  slowMoIncludeCenterLane: 1
+  slowMoCenterOrbitDirection: 1
+  showSlowMoVisual: 1
+  slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
+  slowMoVisualHeight: 0.06
+  slowMoVisualYOffset: 0.01
 --- !u!1 &490041190
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,6 +747,7 @@ GameObject:
   m_Component:
   - component: {fileID: 816899919}
   - component: {fileID: 816899918}
+  - component: {fileID: 816899920}
   m_Layer: 0
   m_Name: WorldRoot
   m_TagString: Untagged
@@ -698,6 +813,32 @@ Transform:
   - {fileID: 460903164}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &816899920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816899917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ad130357899edc47beab88a617e74de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
+  looper: {fileID: 0}
+  autoFindLooper: 1
+  basePointsPerSecond: 6
+  distancePerMultiplier: 90
+  maxMultiplier: 10
+  speedToPointsScale: 0.02
+  showOnGUI: 1
+  showMultiplier: 0
+  hudOffset: {x: 12, y: 10}
+  scoreFontScale: 4
+  useSafeArea: 1
+  coinIcon: {fileID: 21300000, guid: fc0e79dc0895f5e458af7e11f257d9e0, type: 3}
+  coinIconScale: 1
+  coinIconPadding: 8
 --- !u!1 &879354098
 GameObject:
   m_ObjectHideFlags: 0
@@ -1396,6 +1537,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1121488367}
+  - component: {fileID: 1121488368}
   m_Layer: 0
   m_Name: Segment_00
   m_TagString: Untagged
@@ -1421,6 +1563,62 @@ Transform:
   - {fileID: 1263163109}
   m_Father: {fileID: 816899919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1121488368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121488366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84b6ecf8626cbe74d903a7b2ea4af030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSegment
+  layoutVariants: []
+  randomizeYaw: 0
+  yawOptions:
+  - 0
+  obstaclePrefab: {fileID: 0}
+  obstacleLaneCenters: []
+  autoDetectLaneCenters: 1
+  obstacleSpawnChance: 0.7
+  obstacleForwardDistanceRange: {x: 4, y: 10}
+  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleZeroRotation: 1
+  obstacleLocalScale: {x: 1, y: 1, z: 1}
+  enableCoinLine: 1
+  coinLineChance: 0.4
+  coinMinSegmentsBetween: 1
+  coinCountRange: {x: 6, y: 10}
+  coinSpacing: 1.2
+  coinForwardRange: {x: 3, y: 10}
+  coinEdgePadding: 2
+  coinPreferFrontHalf: 0
+  coinPreferNearHalf: 1
+  coinAvoidObstacleDistance: 3
+  coinPrefab: {fileID: 7194491603780009671, guid: 17b94b42735c891428ead0512445b163, type: 3}
+  coinLocalOffset: {x: 0, y: 1, z: 0}
+  coinLocalScale: {x: 1, y: 0.1, z: 1}
+  coinZeroRotation: 0
+  coinValue: 5
+  enableSlowMoZone: 1
+  slowMoZoneChance: 0.4
+  slowMoZoneForwardRange: {x: 3, y: 9}
+  slowMoZoneSize: {x: 5, y: 3, z: 5}
+  autoSizeSlowMoToLane: 1
+  slowMoLaneWidthScale: 0.85
+  slowMoZoneLocalOffset: {x: 0, y: 1, z: 0}
+  slowMoTimeScale: 0.35
+  slowMoZoneEdgePadding: 3
+  slowMoZonePreferFrontHalf: 0
+  slowMoMinSegmentsBetween: 3
+  slowMoIncludeCenterLane: 1
+  slowMoCenterOrbitDirection: 1
+  showSlowMoVisual: 1
+  slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
+  slowMoVisualHeight: 0.06
+  slowMoVisualYOffset: 0.01
 --- !u!1 &1263163108
 GameObject:
   m_ObjectHideFlags: 0
@@ -2154,6 +2352,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1728085853}
+  - component: {fileID: 1728085854}
   m_Layer: 0
   m_Name: Segment_02
   m_TagString: Untagged
@@ -2179,6 +2378,62 @@ Transform:
   - {fileID: 1617813271}
   m_Father: {fileID: 816899919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1728085854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728085852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84b6ecf8626cbe74d903a7b2ea4af030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSegment
+  layoutVariants: []
+  randomizeYaw: 0
+  yawOptions:
+  - 0
+  obstaclePrefab: {fileID: 0}
+  obstacleLaneCenters: []
+  autoDetectLaneCenters: 1
+  obstacleSpawnChance: 0.7
+  obstacleForwardDistanceRange: {x: 4, y: 10}
+  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleZeroRotation: 1
+  obstacleLocalScale: {x: 1, y: 1, z: 1}
+  enableCoinLine: 1
+  coinLineChance: 0.4
+  coinMinSegmentsBetween: 1
+  coinCountRange: {x: 6, y: 10}
+  coinSpacing: 1.2
+  coinForwardRange: {x: 3, y: 10}
+  coinEdgePadding: 2
+  coinPreferFrontHalf: 0
+  coinPreferNearHalf: 1
+  coinAvoidObstacleDistance: 3
+  coinPrefab: {fileID: 7194491603780009671, guid: 17b94b42735c891428ead0512445b163, type: 3}
+  coinLocalOffset: {x: 0, y: 1, z: 0}
+  coinLocalScale: {x: 1, y: 0.1, z: 1}
+  coinZeroRotation: 0
+  coinValue: 5
+  enableSlowMoZone: 1
+  slowMoZoneChance: 0.4
+  slowMoZoneForwardRange: {x: 3, y: 9}
+  slowMoZoneSize: {x: 5, y: 3, z: 5}
+  autoSizeSlowMoToLane: 1
+  slowMoLaneWidthScale: 0.85
+  slowMoZoneLocalOffset: {x: 0, y: 1, z: 0}
+  slowMoTimeScale: 0.35
+  slowMoZoneEdgePadding: 3
+  slowMoZonePreferFrontHalf: 0
+  slowMoMinSegmentsBetween: 3
+  slowMoIncludeCenterLane: 1
+  slowMoCenterOrbitDirection: 1
+  showSlowMoVisual: 1
+  slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
+  slowMoVisualHeight: 0.06
+  slowMoVisualYOffset: 0.01
 --- !u!1 &1833174121
 GameObject:
   m_ObjectHideFlags: 0
