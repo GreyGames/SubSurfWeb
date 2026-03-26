@@ -29,6 +29,9 @@ public class LightweightMainMenu : MonoBehaviour
     [SerializeField] private float panelHeight = 210f;
     [SerializeField] private float buttonHeight = 42f;
     [SerializeField] private float edgePadding = 14f;
+    [SerializeField] private bool scaleMenuOnMobile = true;
+    [SerializeField] private float mobileScale = 3f;
+    [SerializeField] private float desktopScale = 1f;
 
     [Header("Animation")]
     [SerializeField] private float slidePixelsPerSecond = 2200f;
@@ -61,7 +64,8 @@ public class LightweightMainMenu : MonoBehaviour
         RebuildLayout(out float centeredY, out float offTopY, out float offBottomY);
         ResolveTargets(centeredY, offTopY, offBottomY);
 
-        float step = slidePixelsPerSecond * Time.unscaledDeltaTime;
+        float scale = GetGuiScale();
+        float step = slidePixelsPerSecond * Time.unscaledDeltaTime / Mathf.Max(0.1f, scale);
         mainPanelY = Mathf.MoveTowards(mainPanelY, mainTargetY, step);
         optionsPanelY = Mathf.MoveTowards(optionsPanelY, optionsTargetY, step);
 
@@ -73,6 +77,13 @@ public class LightweightMainMenu : MonoBehaviour
         if (mode == MenuMode.Hidden)
         {
             return;
+        }
+
+        float scale = GetGuiScale();
+        Matrix4x4 previousMatrix = GUI.matrix;
+        if (Mathf.Abs(scale - 1f) > 0.001f)
+        {
+            GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
         }
 
         Rect mainRect = GetPanelRect(mainPanelY);
@@ -92,6 +103,7 @@ public class LightweightMainMenu : MonoBehaviour
         }
 
         GUI.depth = previousDepth;
+        GUI.matrix = previousMatrix;
     }
 
     private void DrawMainPanel(Rect panel)
@@ -263,15 +275,35 @@ public class LightweightMainMenu : MonoBehaviour
 
     private void RebuildLayout(out float centeredY, out float offTopY, out float offBottomY)
     {
+        float scale = GetGuiScale();
         safeRect = Screen.safeArea;
         if (safeRect.width <= 1f || safeRect.height <= 1f)
         {
             safeRect = new Rect(0f, 0f, Screen.width, Screen.height);
         }
+        if (Mathf.Abs(scale - 1f) > 0.001f)
+        {
+            safeRect = new Rect(
+                safeRect.x / scale,
+                safeRect.y / scale,
+                safeRect.width / scale,
+                safeRect.height / scale);
+        }
 
         centeredY = safeRect.y + (safeRect.height - panelHeight) * 0.5f;
         offTopY = safeRect.y - panelHeight - 16f;
         offBottomY = safeRect.yMax + 16f;
+    }
+
+    private float GetGuiScale()
+    {
+        float scale = desktopScale;
+        if (scaleMenuOnMobile && Application.isMobilePlatform)
+        {
+            scale = mobileScale;
+        }
+
+        return Mathf.Max(0.1f, scale);
     }
 
     private void CacheRefs()
