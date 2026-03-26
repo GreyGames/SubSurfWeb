@@ -577,7 +577,9 @@ public class RunnerLaneController : MonoBehaviour
 
         cachedBody.isKinematic = true;
         cachedBody.useGravity = false;
-        cachedBody.interpolation = RigidbodyInterpolation.Interpolate;
+        // Player is moved manually in Update(); interpolation here can introduce
+        // visible camera jitter when camera is parented to the player.
+        cachedBody.interpolation = RigidbodyInterpolation.None;
         cachedBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
         cachedCollider = GetComponent<Collider>();
