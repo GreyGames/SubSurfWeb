@@ -2595,7 +2595,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2099421861}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}
 --- !u!4 &2099421865
 Transform:
   m_ObjectHideFlags: 0
@@ -2666,6 +2666,9 @@ MonoBehaviour:
   markerDistance: 0.9
   maxLives: 3
   hitInvulnerableSeconds: 0.6
+  flickerOnHit: 1
+  hitFlickerSeconds: 0.45
+  hitFlickerInterval: 0.08
   showLivesHud: 1
   useSafeAreaForHud: 1
   heartsOffset: {x: 12, y: 10}

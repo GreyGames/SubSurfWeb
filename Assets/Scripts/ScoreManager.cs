@@ -77,6 +77,8 @@ public class ScoreManager : MonoBehaviour
         score += basePointsPerSecond * currentMultiplier * speedBonus * dt;
     }
 
+    public int CurrentScore => Mathf.FloorToInt(score);
+
     public void AddScore(float amount)
     {
         if (amount <= 0f)
