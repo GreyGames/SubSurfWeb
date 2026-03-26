@@ -55,6 +55,24 @@ public class RunnerLaneController : MonoBehaviour
     [SerializeField] private bool useMarkerDistanceCheck = true;
     [SerializeField] private float markerDistance = 0.9f;
 
+    [Header("Lives / Game Over")]
+    [SerializeField] private int maxLives = 3;
+    [SerializeField] private float hitInvulnerableSeconds = 0.6f;
+    [SerializeField] private bool showLivesHud = true;
+    [SerializeField] private bool useSafeAreaForHud = true;
+    [SerializeField] private Vector2 heartsOffset = new Vector2(12f, 10f);
+    [SerializeField] private float heartSize = 26f;
+    [SerializeField] private float heartSpacing = 6f;
+    [SerializeField] private float heartScale = 1f;
+    [SerializeField] private Sprite heartFullSprite;
+    [SerializeField] private Sprite heartEmptySprite;
+    [SerializeField] private Color heartFullColor = new Color(0.85f, 0.12f, 0.12f, 1f);
+    [SerializeField] private Color heartEmptyColor = new Color(0.2f, 0.2f, 0.2f, 0.7f);
+    [SerializeField] private float heartFlickerSeconds = 0.5f;
+    [SerializeField] private float heartFlickerInterval = 0.08f;
+    [SerializeField] private float gameOverFadeDuration = 0.8f;
+    [SerializeField] private float gameOverHoldDuration = 0.6f;
+
     private int laneIndex;
     private float fixedZ;
     private float fixedY;
@@ -78,6 +96,20 @@ public class RunnerLaneController : MonoBehaviour
     private Rigidbody cachedBody;
     private Collider cachedCollider;
     private readonly Collider[] overlapHits = new Collider[8];
+    private int lives;
+    private float lastHitTime;
+    private int flickerIndex = -1;
+    private float flickerUntil;
+    private float nextFlickerToggle;
+    private bool flickerVisible;
+    private bool gameOverActive;
+    private float gameOverStartTime;
+    private float gameOverAlpha;
+    private int gameOverFontSize;
+    private Rect gameOverTextRect;
+    private Texture2D solidTex;
+    private EndlessTrackLooper cachedLooper;
+    private GUIStyle gameOverStyle;
 
     private void Awake()
     {
@@ -107,10 +139,21 @@ public class RunnerLaneController : MonoBehaviour
 
         CacheAnimatorParams();
         SetupDeathCollision();
+        lives = Mathf.Max(1, maxLives);
+        cachedLooper = FindObjectOfType<EndlessTrackLooper>();
+        EnsureSolidTexture();
     }
 
     private void Update()
     {
+        UpdateHeartFlicker();
+
+        if (gameOverActive)
+        {
+            UpdateGameOverFade();
+            return;
+        }
+
         bool allowInput = !inputLocked;
 
         if (allowInput)
@@ -168,6 +211,7 @@ public class RunnerLaneController : MonoBehaviour
         {
             CheckMarkerDistance();
         }
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -179,7 +223,7 @@ public class RunnerLaneController : MonoBehaviour
 
         if (IsObstacle(collision.collider))
         {
-            DieAndRestart();
+            HandleObstacleHit();
         }
     }
 
@@ -192,7 +236,7 @@ public class RunnerLaneController : MonoBehaviour
 
         if (IsObstacle(other))
         {
-            DieAndRestart();
+            HandleObstacleHit();
         }
     }
 
@@ -566,21 +610,7 @@ public class RunnerLaneController : MonoBehaviour
 
     private void DieAndRestart()
     {
-        if (isDead)
-        {
-            return;
-        }
-
-        isDead = true;
-        LockInput(true);
-
-        if (restartDelay <= 0f)
-        {
-            RestartScene();
-            return;
-        }
-
-        Invoke(nameof(RestartScene), restartDelay);
+        HandleObstacleHit();
     }
 
     private void RestartScene()
@@ -608,7 +638,7 @@ public class RunnerLaneController : MonoBehaviour
 
             if (IsObstacle(hit))
             {
-                DieAndRestart();
+                HandleObstacleHit();
                 return;
             }
         }
@@ -636,10 +666,254 @@ public class RunnerLaneController : MonoBehaviour
             Vector3 delta = marker.transform.position - center;
             if (delta.sqrMagnitude <= thresholdSqr)
             {
-                DieAndRestart();
+                HandleObstacleHit();
                 return;
             }
         }
+    }
+
+    private void HandleObstacleHit()
+    {
+        if (!enableDeathOnObstacle || gameOverActive)
+        {
+            return;
+        }
+
+        if (Time.unscaledTime - lastHitTime < hitInvulnerableSeconds)
+        {
+            return;
+        }
+
+        lastHitTime = Time.unscaledTime;
+        lives = Mathf.Max(0, lives - 1);
+        StartHeartFlicker(lives);
+
+        if (lives <= 0)
+        {
+            TriggerGameOver();
+        }
+    }
+
+    private void TriggerGameOver()
+    {
+        gameOverActive = true;
+        gameOverStartTime = Time.unscaledTime;
+        gameOverAlpha = 0f;
+        gameOverFontSize = 0;
+        isDead = true;
+        LockInput(true);
+        Time.timeScale = 1f;
+
+        if (cachedLooper == null)
+        {
+            cachedLooper = FindObjectOfType<EndlessTrackLooper>();
+        }
+
+        if (cachedLooper != null)
+        {
+            cachedLooper.PauseWorld(true);
+        }
+    }
+
+    private void UpdateGameOverFade()
+    {
+        float elapsed = Time.unscaledTime - gameOverStartTime;
+        float t = gameOverFadeDuration <= 0f ? 1f : Mathf.Clamp01(elapsed / gameOverFadeDuration);
+        gameOverAlpha = t;
+
+        if (elapsed >= gameOverFadeDuration + gameOverHoldDuration)
+        {
+            RestartScene();
+        }
+    }
+
+    private void StartHeartFlicker(int index)
+    {
+        if (heartFlickerSeconds <= 0f || index < 0 || index >= maxLives)
+        {
+            flickerIndex = -1;
+            return;
+        }
+
+        flickerIndex = index;
+        flickerUntil = Time.unscaledTime + heartFlickerSeconds;
+        nextFlickerToggle = Time.unscaledTime + heartFlickerInterval;
+        flickerVisible = true;
+    }
+
+    private void UpdateHeartFlicker()
+    {
+        if (flickerIndex < 0)
+        {
+            return;
+        }
+
+        if (Time.unscaledTime >= flickerUntil)
+        {
+            flickerIndex = -1;
+            return;
+        }
+
+        if (Time.unscaledTime >= nextFlickerToggle)
+        {
+            flickerVisible = !flickerVisible;
+            nextFlickerToggle = Time.unscaledTime + heartFlickerInterval;
+        }
+    }
+
+    private void EnsureSolidTexture()
+    {
+        if (solidTex != null)
+        {
+            return;
+        }
+
+        solidTex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        solidTex.SetPixel(0, 0, Color.white);
+        solidTex.Apply();
+    }
+
+    private void OnGUI()
+    {
+        if (showLivesHud)
+        {
+            DrawHearts();
+        }
+
+        if (gameOverActive)
+        {
+            DrawGameOverOverlay();
+        }
+    }
+
+    private void DrawHearts()
+    {
+        EnsureSolidTexture();
+
+        float screenScale = Mathf.Max(1f, Screen.height / 720f);
+        float size = heartSize * heartScale * screenScale;
+        float spacing = heartSpacing * heartScale * screenScale;
+        Rect safe = GetSafeAreaRect();
+        float x = safe.x + heartsOffset.x * screenScale;
+        float yBase = safe.y + heartsOffset.y * screenScale;
+
+        Color previous = GUI.color;
+        for (int i = 0; i < maxLives; i++)
+        {
+            int slotIndex = maxLives - 1 - i;
+            float y = yBase + slotIndex * (size + spacing);
+            bool isFull = i < lives;
+            bool isFlicker = i == flickerIndex;
+            if (isFlicker && !flickerVisible)
+            {
+                continue;
+            }
+
+            bool drawFull = isFull || isFlicker;
+            Color c = drawFull ? heartFullColor : heartEmptyColor;
+            GUI.color = c;
+
+            Rect rect = new Rect(x, y, size, size);
+            if (drawFull && heartFullSprite != null)
+            {
+                DrawSprite(rect, heartFullSprite);
+            }
+            else if (!drawFull && heartEmptySprite != null)
+            {
+                DrawSprite(rect, heartEmptySprite);
+            }
+            else
+            {
+                GUI.DrawTexture(rect, solidTex);
+            }
+        }
+
+        GUI.color = previous;
+    }
+
+    private void DrawGameOverOverlay()
+    {
+        EnsureSolidTexture();
+
+        Color previous = GUI.color;
+        int previousDepth = GUI.depth;
+        GUI.depth = -1000;
+        GUI.color = new Color(0f, 0f, 0f, Mathf.Clamp01(gameOverAlpha));
+        GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), solidTex);
+        GUI.color = previous;
+        GUI.depth = previousDepth;
+
+        if (gameOverAlpha < 0.4f)
+        {
+            return;
+        }
+
+        if (gameOverStyle == null)
+        {
+            gameOverStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontStyle = FontStyle.Bold
+            };
+        }
+
+        PrepareGameOverText();
+        gameOverStyle.fontSize = gameOverFontSize;
+        gameOverStyle.normal.textColor = Color.white;
+
+        GUI.Label(gameOverTextRect, "GAME OVER", gameOverStyle);
+    }
+
+    private static void DrawSprite(Rect rect, Sprite sprite)
+    {
+        if (sprite == null)
+        {
+            return;
+        }
+
+        Texture2D texture = sprite.texture;
+        Rect tr = sprite.textureRect;
+        Rect uv = new Rect(
+            tr.x / texture.width,
+            tr.y / texture.height,
+            tr.width / texture.width,
+            tr.height / texture.height);
+
+        GUI.DrawTextureWithTexCoords(rect, texture, uv);
+    }
+
+    private Rect GetSafeAreaRect()
+    {
+        if (!useSafeAreaForHud)
+        {
+            return new Rect(0f, 0f, Screen.width, Screen.height);
+        }
+
+        Rect safe = Screen.safeArea;
+        if (safe.width <= 0f || safe.height <= 0f)
+        {
+            return new Rect(0f, 0f, Screen.width, Screen.height);
+        }
+
+        return safe;
+    }
+
+    private void PrepareGameOverText()
+    {
+        if (gameOverFontSize > 0 && gameOverTextRect.width > 0f)
+        {
+            return;
+        }
+
+        int baseFont = 18;
+        if (GUI.skin != null && GUI.skin.label != null && GUI.skin.label.fontSize > 0)
+        {
+            baseFont = GUI.skin.label.fontSize;
+        }
+
+        float screenScale = Mathf.Max(1f, Screen.height / 720f);
+        gameOverFontSize = Mathf.RoundToInt(baseFont * 2.2f * screenScale);
+        gameOverTextRect = new Rect(0f, 0f, Screen.width, Screen.height);
     }
 }
 

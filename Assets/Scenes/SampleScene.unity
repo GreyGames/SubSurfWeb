@@ -2409,6 +2409,22 @@ MonoBehaviour:
   overlapOffset: {x: 0, y: 0.9, z: 0}
   useMarkerDistanceCheck: 1
   markerDistance: 0.9
+  maxLives: 3
+  hitInvulnerableSeconds: 0.6
+  showLivesHud: 1
+  useSafeAreaForHud: 1
+  heartsOffset: {x: 12, y: 10}
+  heartSize: 26
+  heartSpacing: 6
+  heartScale: 1
+  heartFullSprite: {fileID: 21300000, guid: 7e203055584d4f14887ff7cd542c6d46, type: 3}
+  heartEmptySprite: {fileID: 21300000, guid: 7e203055584d4f14887ff7cd542c6d46, type: 3}
+  heartFullColor: {r: 0.85, g: 0.12, b: 0.12, a: 1}
+  heartEmptyColor: {r: 0.2, g: 0.2, b: 0.2, a: 0.7}
+  heartFlickerSeconds: 0.5
+  heartFlickerInterval: 0.08
+  gameOverFadeDuration: 0.8
+  gameOverHoldDuration: 0.6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

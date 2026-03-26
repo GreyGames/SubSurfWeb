@@ -16,11 +16,14 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private bool showOnGUI = true;
     [SerializeField] private bool showMultiplier = false;
     [SerializeField] private Vector2 hudOffset = new Vector2(12f, 10f);
+    [SerializeField] private float scoreFontScale = 2f;
+    [SerializeField] private bool useSafeArea = true;
 
     private float score;
     private float distance;
     private float currentMultiplier = 1f;
     private GUIStyle centeredStyle;
+    private int centeredBaseFontSize;
 
     private void Awake()
     {
@@ -66,6 +69,15 @@ public class ScoreManager : MonoBehaviour
             {
                 alignment = TextAnchor.UpperCenter
             };
+            centeredBaseFontSize = centeredStyle.fontSize;
+            if (centeredBaseFontSize <= 0)
+            {
+                centeredBaseFontSize = GUI.skin.label.fontSize;
+            }
+            if (centeredBaseFontSize <= 0)
+            {
+                centeredBaseFontSize = 14;
+            }
         }
 
         Color previous = GUI.color;
@@ -75,16 +87,36 @@ public class ScoreManager : MonoBehaviour
         string scoreText = $"Score: {displayScore}";
         string multText = $"x{currentMultiplier:0.0}";
 
-        float width = 240f;
-        float x = (Screen.width - width) * 0.5f;
-        Rect r1 = new Rect(x, hudOffset.y, width, 24f);
+        centeredStyle.fontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
+        float lineHeight = centeredStyle.fontSize + 6f;
+        Rect safe = GetSafeAreaRect();
+        float width = safe.width;
+        float x = safe.x;
+        float y = safe.y + hudOffset.y;
+        Rect r1 = new Rect(x, y, width, lineHeight);
         GUI.Label(r1, scoreText, centeredStyle);
         if (showMultiplier)
         {
-            Rect r2 = new Rect(x, hudOffset.y + 20f, width, 24f);
+            Rect r2 = new Rect(x, y + lineHeight, width, lineHeight);
             GUI.Label(r2, multText, centeredStyle);
         }
 
         GUI.color = previous;
+    }
+
+    private Rect GetSafeAreaRect()
+    {
+        if (!useSafeArea)
+        {
+            return new Rect(0f, 0f, Screen.width, Screen.height);
+        }
+
+        Rect safe = Screen.safeArea;
+        if (safe.width <= 0f || safe.height <= 0f)
+        {
+            return new Rect(0f, 0f, Screen.width, Screen.height);
+        }
+
+        return safe;
     }
 }
