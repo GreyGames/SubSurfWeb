@@ -11,6 +11,8 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private float distancePerMultiplier = 60f;
     [SerializeField] private float maxMultiplier = 12f;
     [SerializeField] private float speedToPointsScale = 0.03f;
+    [SerializeField] private bool scoreOnlyWhileWorldMoving = true;
+    [SerializeField] private float minSpeedToScore = 0.01f;
 
     [Header("HUD")]
     [SerializeField] private bool showOnGUI = true;
@@ -47,6 +49,11 @@ public class ScoreManager : MonoBehaviour
         }
 
         float speed = looper.CurrentSpeed;
+        if (scoreOnlyWhileWorldMoving && (looper.IsPaused || speed <= minSpeedToScore))
+        {
+            return;
+        }
+
         distance += Mathf.Max(0f, speed) * dt;
 
         currentMultiplier = 1f + (distance / Mathf.Max(1f, distancePerMultiplier));
