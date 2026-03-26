@@ -58,6 +58,9 @@ public class RunnerLaneController : MonoBehaviour
     [Header("Lives / Game Over")]
     [SerializeField] private int maxLives = 3;
     [SerializeField] private float hitInvulnerableSeconds = 0.6f;
+    [SerializeField] private bool flickerOnHit = true;
+    [SerializeField] private float hitFlickerSeconds = 0.45f;
+    [SerializeField] private float hitFlickerInterval = 0.08f;
     [SerializeField] private bool showLivesHud = true;
     [SerializeField] private bool useSafeAreaForHud = true;
     [SerializeField] private Vector2 heartsOffset = new Vector2(12f, 10f);
@@ -107,9 +110,18 @@ public class RunnerLaneController : MonoBehaviour
     private float gameOverAlpha;
     private int gameOverFontSize;
     private Rect gameOverTextRect;
+    private int gameOverScoreFontSize;
+    private Rect gameOverScoreRect;
     private Texture2D solidTex;
     private EndlessTrackLooper cachedLooper;
     private GUIStyle gameOverStyle;
+    private GUIStyle gameOverScoreStyle;
+    private Renderer[] cachedRenderers;
+    private bool hitFlickerActive;
+    private float hitFlickerUntil;
+    private float nextHitFlickerToggle;
+    private bool hitFlickerVisible = true;
+    private int finalScore;
 
     private void Awake()
     {
@@ -142,11 +154,13 @@ public class RunnerLaneController : MonoBehaviour
         lives = Mathf.Max(1, maxLives);
         cachedLooper = FindObjectOfType<EndlessTrackLooper>();
         EnsureSolidTexture();
+        cachedRenderers = GetComponentsInChildren<Renderer>(true);
     }
 
     private void Update()
     {
         UpdateHeartFlicker();
+        UpdateHitFlicker();
 
         if (gameOverActive)
         {
@@ -687,6 +701,7 @@ public class RunnerLaneController : MonoBehaviour
         lastHitTime = Time.unscaledTime;
         lives = Mathf.Max(0, lives - 1);
         StartHeartFlicker(lives);
+        StartHitFlicker();
 
         if (lives <= 0)
         {
@@ -700,6 +715,8 @@ public class RunnerLaneController : MonoBehaviour
         gameOverStartTime = Time.unscaledTime;
         gameOverAlpha = 0f;
         gameOverFontSize = 0;
+        gameOverScoreFontSize = 0;
+        finalScore = GetCurrentScore();
         isDead = true;
         LockInput(true);
         Time.timeScale = 1f;
@@ -723,6 +740,7 @@ public class RunnerLaneController : MonoBehaviour
 
         if (elapsed >= gameOverFadeDuration + gameOverHoldDuration)
         {
+            StopHitFlicker();
             RestartScene();
         }
     }
@@ -758,6 +776,48 @@ public class RunnerLaneController : MonoBehaviour
         {
             flickerVisible = !flickerVisible;
             nextFlickerToggle = Time.unscaledTime + heartFlickerInterval;
+        }
+    }
+
+    private void StartHitFlicker()
+    {
+        if (!flickerOnHit || hitFlickerSeconds <= 0f)
+        {
+            return;
+        }
+
+        hitFlickerActive = true;
+        hitFlickerUntil = Time.unscaledTime + hitFlickerSeconds;
+        nextHitFlickerToggle = Time.unscaledTime + hitFlickerInterval;
+        hitFlickerVisible = true;
+        SetRenderersVisible(true);
+    }
+
+    private void StopHitFlicker()
+    {
+        hitFlickerActive = false;
+        hitFlickerVisible = true;
+        SetRenderersVisible(true);
+    }
+
+    private void UpdateHitFlicker()
+    {
+        if (!hitFlickerActive)
+        {
+            return;
+        }
+
+        if (Time.unscaledTime >= hitFlickerUntil)
+        {
+            StopHitFlicker();
+            return;
+        }
+
+        if (Time.unscaledTime >= nextHitFlickerToggle)
+        {
+            hitFlickerVisible = !hitFlickerVisible;
+            SetRenderersVisible(hitFlickerVisible);
+            nextHitFlickerToggle = Time.unscaledTime + hitFlickerInterval;
         }
     }
 
@@ -862,6 +922,19 @@ public class RunnerLaneController : MonoBehaviour
         gameOverStyle.normal.textColor = Color.white;
 
         GUI.Label(gameOverTextRect, "GAME OVER", gameOverStyle);
+
+        if (gameOverScoreStyle == null)
+        {
+            gameOverScoreStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontStyle = FontStyle.Bold
+            };
+        }
+
+        gameOverScoreStyle.fontSize = gameOverScoreFontSize;
+        gameOverScoreStyle.normal.textColor = Color.white;
+        GUI.Label(gameOverScoreRect, $"Score: {finalScore}", gameOverScoreStyle);
     }
 
     private static void DrawSprite(Rect rect, Sprite sprite)
@@ -913,7 +986,49 @@ public class RunnerLaneController : MonoBehaviour
 
         float screenScale = Mathf.Max(1f, Screen.height / 720f);
         gameOverFontSize = Mathf.RoundToInt(baseFont * 2.2f * screenScale);
-        gameOverTextRect = new Rect(0f, 0f, Screen.width, Screen.height);
+        gameOverScoreFontSize = Mathf.RoundToInt(baseFont * 1.4f * screenScale);
+
+        float centerY = Screen.height * 0.5f;
+        float gameOverHeight = gameOverFontSize + 10f;
+        float scoreHeight = gameOverScoreFontSize + 8f;
+        float totalHeight = gameOverHeight + scoreHeight;
+        float top = centerY - totalHeight * 0.5f;
+
+        gameOverTextRect = new Rect(0f, top, Screen.width, gameOverHeight);
+        gameOverScoreRect = new Rect(0f, top + gameOverHeight, Screen.width, scoreHeight);
+    }
+
+    private void SetRenderersVisible(bool visible)
+    {
+        if (cachedRenderers == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < cachedRenderers.Length; i++)
+        {
+            Renderer r = cachedRenderers[i];
+            if (r != null)
+            {
+                r.enabled = visible;
+            }
+        }
+    }
+
+    private int GetCurrentScore()
+    {
+        if (ScoreManager.Instance != null)
+        {
+            return ScoreManager.Instance.CurrentScore;
+        }
+
+        ScoreManager manager = FindObjectOfType<ScoreManager>();
+        if (manager != null)
+        {
+            return manager.CurrentScore;
+        }
+
+        return 0;
     }
 }
 

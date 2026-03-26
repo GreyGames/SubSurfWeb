@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
+    public static ScoreManager Instance { get; private set; }
+
     [Header("References")]
     [SerializeField] private EndlessTrackLooper looper;
     [SerializeField] private bool autoFindLooper = true;
 
     [Header("Scoring")]
-    [SerializeField] private float basePointsPerSecond = 8f;
-    [SerializeField] private float distancePerMultiplier = 60f;
-    [SerializeField] private float maxMultiplier = 12f;
-    [SerializeField] private float speedToPointsScale = 0.03f;
+    [SerializeField] private float basePointsPerSecond = 6f;
+    [SerializeField] private float distancePerMultiplier = 90f;
+    [SerializeField] private float maxMultiplier = 10f;
+    [SerializeField] private float speedToPointsScale = 0.02f;
     [SerializeField] private bool scoreOnlyWhileWorldMoving = true;
     [SerializeField] private float minSpeedToScore = 0.01f;
 
@@ -18,8 +20,11 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private bool showOnGUI = true;
     [SerializeField] private bool showMultiplier = false;
     [SerializeField] private Vector2 hudOffset = new Vector2(12f, 10f);
-    [SerializeField] private float scoreFontScale = 2f;
+    [SerializeField] private float scoreFontScale = 4f;
     [SerializeField] private bool useSafeArea = true;
+    [SerializeField] private Sprite coinIcon;
+    [SerializeField] private float coinIconScale = 1f;
+    [SerializeField] private float coinIconPadding = 8f;
 
     private float score;
     private float distance;
@@ -29,9 +34,25 @@ public class ScoreManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+
         if (autoFindLooper && looper == null)
         {
             looper = FindObjectOfType<EndlessTrackLooper>();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
         }
     }
 
@@ -63,6 +84,18 @@ public class ScoreManager : MonoBehaviour
         score += basePointsPerSecond * currentMultiplier * speedBonus * dt;
     }
 
+    public int CurrentScore => Mathf.FloorToInt(score);
+
+    public void AddScore(float amount)
+    {
+        if (amount <= 0f)
+        {
+            return;
+        }
+
+        score += amount;
+    }
+
     private void OnGUI()
     {
         if (!showOnGUI)
@@ -88,23 +121,36 @@ public class ScoreManager : MonoBehaviour
         }
 
         Color previous = GUI.color;
-        GUI.color = Color.black;
 
         int displayScore = Mathf.FloorToInt(score);
-        string scoreText = $"Score: {displayScore}";
+        string scoreText = displayScore.ToString();
         string multText = $"x{currentMultiplier:0.0}";
 
         centeredStyle.fontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
         float lineHeight = centeredStyle.fontSize + 6f;
         Rect safe = GetSafeAreaRect();
-        float width = safe.width;
-        float x = safe.x;
         float y = safe.y + hudOffset.y;
-        Rect r1 = new Rect(x, y, width, lineHeight);
+        GUIContent scoreContent = new GUIContent(scoreText);
+        float textWidth = centeredStyle.CalcSize(scoreContent).x;
+        float iconSize = lineHeight * Mathf.Max(0.5f, coinIconScale);
+        float iconPadding = coinIcon != null ? coinIconPadding : 0f;
+        float totalWidth = textWidth + (coinIcon != null ? iconSize + iconPadding : 0f);
+        float x = safe.x + (safe.width - totalWidth) * 0.5f;
+
+        if (coinIcon != null)
+        {
+            GUI.color = Color.white;
+            Rect iconRect = new Rect(x, y + (lineHeight - iconSize) * 0.5f, iconSize, iconSize);
+            DrawSprite(iconRect, coinIcon);
+            x += iconSize + iconPadding;
+        }
+
+        GUI.color = Color.black;
+        Rect r1 = new Rect(x, y, textWidth, lineHeight);
         GUI.Label(r1, scoreText, centeredStyle);
         if (showMultiplier)
         {
-            Rect r2 = new Rect(x, y + lineHeight, width, lineHeight);
+            Rect r2 = new Rect(safe.x, y + lineHeight, safe.width, lineHeight);
             GUI.Label(r2, multText, centeredStyle);
         }
 
@@ -125,5 +171,23 @@ public class ScoreManager : MonoBehaviour
         }
 
         return safe;
+    }
+
+    private static void DrawSprite(Rect rect, Sprite sprite)
+    {
+        if (sprite == null)
+        {
+            return;
+        }
+
+        Texture2D texture = sprite.texture;
+        Rect tr = sprite.textureRect;
+        Rect uv = new Rect(
+            tr.x / texture.width,
+            tr.y / texture.height,
+            tr.width / texture.width,
+            tr.height / texture.height);
+
+        GUI.DrawTextureWithTexCoords(rect, texture, uv);
     }
 }
