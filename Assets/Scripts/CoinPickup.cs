@@ -48,7 +48,7 @@ public class CoinPickup : MonoBehaviour
             return;
         }
 
-        if (other == null || other.GetComponentInParent<RunnerLaneController>() == null)
+        if (!IsCollector(other))
         {
             return;
         }
@@ -64,12 +64,30 @@ public class CoinPickup : MonoBehaviour
             }
         }
 
-        if (scoreManager != null)
-        {
-            scoreManager.AddScore(value);
-        }
+        scoreManager?.AddCoins(value);
 
         gameObject.SetActive(false);
+    }
+
+    private static bool IsCollector(Collider other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        if (other.GetComponentInParent<RunnerLaneController>() != null)
+        {
+            return true;
+        }
+
+        Rigidbody rb = other.attachedRigidbody;
+        if (rb != null && rb.GetComponentInParent<RunnerLaneController>() != null)
+        {
+            return true;
+        }
+
+        return other.CompareTag("Player");
     }
 
     public void SetValue(int newValue)

@@ -3,6 +3,9 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance { get; private set; }
+    private const string SessionLegacyScoreKey = "subsurf.session.score";
+    private const string SessionHighScoreKey = "subsurf.session.highscore";
+    private const string SessionCoinsKey = "subsurf.session.coins";
 
     [Header("References")]
     [SerializeField] private EndlessTrackLooper looper;
@@ -23,7 +26,11 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private bool showMultiplier = false;
     [SerializeField] private Vector2 hudOffset = new Vector2(12f, 10f);
     [SerializeField] private float scoreFontScale = 4f;
+    [SerializeField] private float highScoreFontScale = 1.8f;
+    [SerializeField] private float coinsFontScale = 2f;
     [SerializeField] private bool useSafeArea = true;
+    [SerializeField] private bool showCoinsOnHUD = true;
+    [SerializeField] private float hudLineSpacing = 2f;
     [SerializeField] private Sprite coinIcon;
     [SerializeField] private float coinIconScale = 1f;
     [SerializeField] private float coinIconPadding = 8f;
@@ -31,8 +38,12 @@ public class ScoreManager : MonoBehaviour
     private float score;
     private float distance;
     private float currentMultiplier = 1f;
+    private int highScore;
+    private int coins;
+    private int lastSavedHighScore = int.MinValue;
+    private int lastSavedCoins = int.MinValue;
     private GUIStyle centeredStyle;
-    private GUIStyle leftStyle;
+    private GUIStyle coinStyle;
     private int centeredBaseFontSize;
 
     private void Awake()
@@ -54,10 +65,15 @@ public class ScoreManager : MonoBehaviour
         {
             runner = FindObjectOfType<RunnerLaneController>();
         }
+
+        LoadSessionProgress();
+        ResetRunScoreState();
     }
 
     private void OnDestroy()
     {
+        SaveSessionProgressIfDirty();
+
         if (Instance == this)
         {
             Instance = null;
@@ -90,9 +106,12 @@ public class ScoreManager : MonoBehaviour
 
         float speedBonus = 1f + Mathf.Max(0f, speed) * speedToPointsScale;
         score += basePointsPerSecond * currentMultiplier * speedBonus * dt;
+        UpdateHighScoreFromCurrentScore();
+        SaveSessionProgressIfDirty();
     }
 
     public int CurrentScore => Mathf.FloorToInt(score);
+    public int CurrentCoins => Mathf.Max(0, coins);
 
     public void AddScore(float amount)
     {
@@ -102,6 +121,69 @@ public class ScoreManager : MonoBehaviour
         }
 
         score += amount;
+        UpdateHighScoreFromCurrentScore();
+        SaveSessionProgressIfDirty();
+    }
+
+    public void AddCoins(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        coins += amount;
+        SaveSessionProgressIfDirty();
+    }
+
+    private void LoadSessionProgress()
+    {
+        // Cleanup old key from previous behavior where current score persisted.
+        WebSessionStorage.Remove(SessionLegacyScoreKey);
+
+        if (WebSessionStorage.TryGetInt(SessionHighScoreKey, out int savedHighScore))
+        {
+            highScore = Mathf.Max(0, savedHighScore);
+        }
+
+        if (WebSessionStorage.TryGetInt(SessionCoinsKey, out int savedCoins))
+        {
+            coins = Mathf.Max(0, savedCoins);
+        }
+
+        lastSavedHighScore = Mathf.Max(0, highScore);
+        lastSavedCoins = Mathf.Max(0, coins);
+    }
+
+    private void SaveSessionProgressIfDirty()
+    {
+        int highScoreInt = Mathf.Max(0, highScore);
+        int coinsInt = Mathf.Max(0, coins);
+        if (highScoreInt == lastSavedHighScore && coinsInt == lastSavedCoins)
+        {
+            return;
+        }
+
+        lastSavedHighScore = highScoreInt;
+        lastSavedCoins = coinsInt;
+        WebSessionStorage.SetInt(SessionHighScoreKey, highScoreInt);
+        WebSessionStorage.SetInt(SessionCoinsKey, coinsInt);
+    }
+
+    private void ResetRunScoreState()
+    {
+        score = 0f;
+        distance = 0f;
+        currentMultiplier = 1f;
+    }
+
+    private void UpdateHighScoreFromCurrentScore()
+    {
+        int scoreInt = Mathf.FloorToInt(score);
+        if (scoreInt > highScore)
+        {
+            highScore = scoreInt;
+        }
     }
 
     private void OnGUI()
@@ -131,7 +213,7 @@ public class ScoreManager : MonoBehaviour
             {
                 centeredBaseFontSize = 14;
             }
-            leftStyle = new GUIStyle(centeredStyle)
+            coinStyle = new GUIStyle(centeredStyle)
             {
                 alignment = TextAnchor.UpperLeft
             };
@@ -141,36 +223,54 @@ public class ScoreManager : MonoBehaviour
 
         int displayScore = Mathf.FloorToInt(score);
         string scoreText = displayScore.ToString();
+        string highScoreText = $"Best {Mathf.Max(0, highScore)}";
         string multText = $"x{currentMultiplier:0.0}";
 
-        int hudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
-        centeredStyle.fontSize = hudFontSize;
-        leftStyle.fontSize = hudFontSize;
-        float lineHeight = centeredStyle.fontSize + 6f;
+        int scoreHudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
+        int highScoreHudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, highScoreFontScale));
+        int coinHudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, coinsFontScale));
         Rect safe = GetSafeAreaRect();
         float y = safe.y + hudOffset.y;
-        GUIContent scoreContent = new GUIContent(scoreText);
-        float textWidth = centeredStyle.CalcSize(scoreContent).x;
-        float iconSize = lineHeight * Mathf.Max(0.5f, coinIconScale);
-        float iconPadding = coinIcon != null ? coinIconPadding : 0f;
-        float totalWidth = textWidth + (coinIcon != null ? iconSize + iconPadding : 0f);
-        float x = safe.x + (safe.width - totalWidth) * 0.5f;
 
-        if (coinIcon != null)
+        if (showCoinsOnHUD)
         {
-            GUI.color = Color.white;
-            Rect iconRect = new Rect(x, y + (lineHeight - iconSize) * 0.5f, iconSize, iconSize);
-            DrawSprite(iconRect, coinIcon);
-            x += iconSize + iconPadding;
+            centeredStyle.fontSize = coinHudFontSize;
+            coinStyle.fontSize = coinHudFontSize;
+            float coinLineHeight = centeredStyle.fontSize + 6f;
+            string coinText = Mathf.Max(0, coins).ToString();
+            GUIContent coinContent = new GUIContent(coinText);
+            float coinTextWidth = Mathf.Ceil(coinStyle.CalcSize(coinContent).x + 8f);
+            float iconSize = Mathf.Ceil(coinLineHeight * Mathf.Max(0.5f, coinIconScale));
+            float iconPadding = coinIcon != null ? coinIconPadding : 0f;
+            float totalCoinWidth = coinTextWidth + (coinIcon != null ? iconSize + iconPadding : 0f);
+            float rightEdge = safe.x + safe.width - Mathf.Max(0f, hudOffset.x);
+            float x = Mathf.Floor(rightEdge - totalCoinWidth);
+
+            if (coinIcon != null)
+            {
+                GUI.color = Color.white;
+                Rect iconRect = new Rect(x, y + (coinLineHeight - iconSize) * 0.5f, iconSize, iconSize);
+                DrawSprite(iconRect, coinIcon);
+                x += iconSize + iconPadding;
+            }
+
+            GUI.color = Color.black;
+            Rect coinRect = new Rect(x, y, coinTextWidth, coinLineHeight);
+            GUI.Label(coinRect, coinText, coinStyle);
         }
 
+        centeredStyle.fontSize = scoreHudFontSize;
+        float scoreLineHeight = centeredStyle.fontSize + 6f;
         GUI.color = Color.black;
-        float labelWidth = (safe.x + safe.width) - x;
-        Rect r1 = new Rect(x, y, Mathf.Max(textWidth, labelWidth), lineHeight);
-        GUI.Label(r1, scoreText, leftStyle);
+        Rect scoreRect = new Rect(safe.x, y, safe.width, scoreLineHeight);
+        GUI.Label(scoreRect, scoreText, centeredStyle);
+        centeredStyle.fontSize = highScoreHudFontSize;
+        float highScoreLineHeight = centeredStyle.fontSize + 4f;
+        Rect highScoreRect = new Rect(safe.x, y + scoreLineHeight + Mathf.Max(0f, hudLineSpacing), safe.width, highScoreLineHeight);
+        GUI.Label(highScoreRect, highScoreText, centeredStyle);
         if (showMultiplier)
         {
-            Rect r2 = new Rect(safe.x, y + lineHeight, safe.width, lineHeight);
+            Rect r2 = new Rect(safe.x, y + scoreLineHeight + highScoreLineHeight + Mathf.Max(0f, hudLineSpacing), safe.width, scoreLineHeight);
             GUI.Label(r2, multText, centeredStyle);
         }
 
