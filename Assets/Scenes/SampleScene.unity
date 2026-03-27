@@ -192,7 +192,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 5
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -283,7 +283,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 5
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -839,7 +839,11 @@ MonoBehaviour:
   showMultiplier: 0
   hudOffset: {x: 12, y: 10}
   scoreFontScale: 4
+  highScoreFontScale: 1.8
+  coinsFontScale: 2
   useSafeArea: 1
+  showCoinsOnHUD: 1
+  hudLineSpacing: 2
   coinIcon: {fileID: 21300000, guid: fc0e79dc0895f5e458af7e11f257d9e0, type: 3}
   coinIconScale: 1
   coinIconPadding: 8
@@ -1641,7 +1645,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 5
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -1688,21 +1692,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c224bb9fce52c4f468beb2b4af6ad083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightweightMainMenu
-  looper: {fileID: 0}
-  runner: {fileID: 0}
-  cameraShift: {fileID: 0}
-  autoFindReferences: 1
-  startPaused: 1
-  disableScriptAfterPlay: 1
-  mainTitle: Main Menu
-  optionsTitle: Options
-  panelWidth: 320
-  panelHeight: 210
-  buttonHeight: 42
-  edgePadding: 14
-  slidePixelsPerSecond: 2200
-  playKey: 13
-  backKey: 27
 --- !u!4 &1216275428
 Transform:
   m_ObjectHideFlags: 0
@@ -2515,7 +2504,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 5
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
