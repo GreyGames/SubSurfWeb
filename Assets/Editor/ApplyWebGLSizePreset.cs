@@ -56,11 +56,11 @@ public static class ApplyWebGLSizePreset
 #pragma warning restore 618
         PlayerSettings.WebGL.nameFilesAsHashes = true;
         PlayerSettings.WebGL.dataCaching = false;
-        PlayerSettings.WebGL.decompressionFallback = false;
+        PlayerSettings.WebGL.decompressionFallback = true;
         PlayerSettings.WebGL.threadsSupport = false;
 
         AssetDatabase.SaveAssets();
-        Debug.Log("[ApplyWebGLSizePreset] Applied RELEASE WebGL preset (Brotli, no fallback).");
+        Debug.Log("[ApplyWebGLSizePreset] Applied RELEASE WebGL preset (Brotli with decompression fallback).");
     }
 
     private static void ApplyLocalDev()
