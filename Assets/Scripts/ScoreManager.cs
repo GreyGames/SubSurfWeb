@@ -3,9 +3,6 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance { get; private set; }
-    private const string SessionLegacyScoreKey = "subsurf.session.score";
-    private const string SessionHighScoreKey = "subsurf.session.highscore";
-    private const string SessionCoinsKey = "subsurf.session.coins";
 
     [Header("References")]
     [SerializeField] private EndlessTrackLooper looper;
@@ -40,8 +37,6 @@ public class ScoreManager : MonoBehaviour
     private float currentMultiplier = 1f;
     private int highScore;
     private int coins;
-    private int lastSavedHighScore = int.MinValue;
-    private int lastSavedCoins = int.MinValue;
     private GUIStyle centeredStyle;
     private GUIStyle coinStyle;
     private int centeredBaseFontSize;
@@ -66,14 +61,11 @@ public class ScoreManager : MonoBehaviour
             runner = FindObjectOfType<RunnerLaneController>();
         }
 
-        LoadSessionProgress();
         ResetRunScoreState();
     }
 
     private void OnDestroy()
     {
-        SaveSessionProgressIfDirty();
-
         if (Instance == this)
         {
             Instance = null;
@@ -107,7 +99,6 @@ public class ScoreManager : MonoBehaviour
         float speedBonus = 1f + Mathf.Max(0f, speed) * speedToPointsScale;
         score += basePointsPerSecond * currentMultiplier * speedBonus * dt;
         UpdateHighScoreFromCurrentScore();
-        SaveSessionProgressIfDirty();
     }
 
     public int CurrentScore => Mathf.FloorToInt(score);
@@ -122,7 +113,6 @@ public class ScoreManager : MonoBehaviour
 
         score += amount;
         UpdateHighScoreFromCurrentScore();
-        SaveSessionProgressIfDirty();
     }
 
     public void AddCoins(int amount)
@@ -132,42 +122,9 @@ public class ScoreManager : MonoBehaviour
             return;
         }
 
+        int previousCoins = coins;
         coins += amount;
-        SaveSessionProgressIfDirty();
-    }
-
-    private void LoadSessionProgress()
-    {
-        // Cleanup old key from previous behavior where current score persisted.
-        WebSessionStorage.Remove(SessionLegacyScoreKey);
-
-        if (WebSessionStorage.TryGetInt(SessionHighScoreKey, out int savedHighScore))
-        {
-            highScore = Mathf.Max(0, savedHighScore);
-        }
-
-        if (WebSessionStorage.TryGetInt(SessionCoinsKey, out int savedCoins))
-        {
-            coins = Mathf.Max(0, savedCoins);
-        }
-
-        lastSavedHighScore = Mathf.Max(0, highScore);
-        lastSavedCoins = Mathf.Max(0, coins);
-    }
-
-    private void SaveSessionProgressIfDirty()
-    {
-        int highScoreInt = Mathf.Max(0, highScore);
-        int coinsInt = Mathf.Max(0, coins);
-        if (highScoreInt == lastSavedHighScore && coinsInt == lastSavedCoins)
-        {
-            return;
-        }
-
-        lastSavedHighScore = highScoreInt;
-        lastSavedCoins = coinsInt;
-        WebSessionStorage.SetInt(SessionHighScoreKey, highScoreInt);
-        WebSessionStorage.SetInt(SessionCoinsKey, coinsInt);
+        WebGameEvents.TrySendWinForCoins(previousCoins, coins);
     }
 
     private void ResetRunScoreState()

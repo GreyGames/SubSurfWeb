@@ -5,10 +5,17 @@ public class SubSurfWeb : MonoBehaviour
 {
     private static SubSurfWeb instance;
 
+    [Header("Fallback Start Sequence")]
+    [SerializeField] private bool enableLocalStartSequence = true;
+    [SerializeField] private float maxDelayBetweenSequenceKeys = 1.2f;
+
     private EndlessTrackLooper looper;
     private RunnerLaneController runner;
     private CameraSideShift cameraShift;
     private bool hasStarted;
+    private readonly KeyCode[] localStartSequence = { KeyCode.P, KeyCode.T, KeyCode.G, KeyCode.N };
+    private int localStartSequenceIndex;
+    private float localStartSequenceDeadline;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -37,6 +44,7 @@ public class SubSurfWeb : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneLoaded += OnSceneLoaded;
+        WebGameEvents.ResetRun();
         CacheReferences();
         ApplyPausedState(true);
     }
@@ -55,14 +63,27 @@ public class SubSurfWeb : MonoBehaviour
     public void StartPlayTransition()
     {
         hasStarted = true;
+        localStartSequenceIndex = 0;
         CacheReferences();
         ApplyPausedState(false);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        WebGameEvents.ResetRun();
+        localStartSequenceIndex = 0;
         CacheReferences();
         ApplyPausedState(!hasStarted);
+    }
+
+    private void Update()
+    {
+        if (hasStarted || !enableLocalStartSequence)
+        {
+            return;
+        }
+
+        HandleLocalStartSequence();
     }
 
     private void CacheReferences()
@@ -99,5 +120,41 @@ public class SubSurfWeb : MonoBehaviour
         {
             cameraShift.SetIntroActive(paused);
         }
+    }
+
+    private void HandleLocalStartSequence()
+    {
+        if (localStartSequenceIndex > 0 && Time.unscaledTime > localStartSequenceDeadline)
+        {
+            localStartSequenceIndex = 0;
+        }
+
+        if (!Input.anyKeyDown)
+        {
+            return;
+        }
+
+        KeyCode expected = localStartSequence[localStartSequenceIndex];
+        if (Input.GetKeyDown(expected))
+        {
+            localStartSequenceIndex++;
+            localStartSequenceDeadline = Time.unscaledTime + maxDelayBetweenSequenceKeys;
+
+            if (localStartSequenceIndex >= localStartSequence.Length)
+            {
+                StartPlayTransition();
+            }
+
+            return;
+        }
+
+        if (Input.GetKeyDown(localStartSequence[0]))
+        {
+            localStartSequenceIndex = 1;
+            localStartSequenceDeadline = Time.unscaledTime + maxDelayBetweenSequenceKeys;
+            return;
+        }
+
+        localStartSequenceIndex = 0;
     }
 }

@@ -716,6 +716,7 @@ public class RunnerLaneController : MonoBehaviour
     private void TriggerGameOver()
     {
         gameOverActive = true;
+        WebGameEvents.SendGameLose();
         gameOverStartTime = Time.unscaledTime;
         gameOverAlpha = 0f;
         gameOverFontSize = 0;
