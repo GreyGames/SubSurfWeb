@@ -791,8 +791,8 @@ MonoBehaviour:
   fogMode: 1
   fogColor: {r: 0.74875396, g: 0.8031328, b: 0.8867924, a: 1}
   fogStartDistance: 4
-  fogEndDistance: 120
-  fogDensity: 6000
+  fogEndDistance: 100
+  fogDensity: 1
 --- !u!4 &816899919
 Transform:
   m_ObjectHideFlags: 0
@@ -888,7 +888,8 @@ MonoBehaviour:
   - {fileID: 1212380520111254, guid: 562df8355904213468a690c4ce6740b6, type: 3}
   - {fileID: 1199332134306268, guid: 1e198ff9400b5064c816d8f779eff296, type: 3}
   - {fileID: 1934853517836424, guid: 931ecb32d754b3f40afc9a688c8cea66, type: 3}
-  useWeightedSidePrefabs: 1
+  - {fileID: 1199332134306268, guid: 2bed807e0d15e4c49b0bf7d62f3089d1, type: 3}
+  useWeightedSidePrefabs: 0
   weightedSideBuildingPrefabs: []
   despawnPassedDistance: 0
 --- !u!1 &879354098
@@ -2834,7 +2835,7 @@ Transform:
   m_GameObject: {fileID: 1833174121}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.313999, y: 0, z: 19.2}
+  m_LocalPosition: {x: 12.313999, y: 0, z: 16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
