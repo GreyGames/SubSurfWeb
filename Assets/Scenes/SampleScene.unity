@@ -748,6 +748,7 @@ GameObject:
   - component: {fileID: 816899919}
   - component: {fileID: 816899918}
   - component: {fileID: 816899920}
+  - component: {fileID: 816899921}
   m_Layer: 0
   m_Name: WorldRoot
   m_TagString: Untagged
@@ -847,6 +848,42 @@ MonoBehaviour:
   coinIcon: {fileID: 21300000, guid: fc0e79dc0895f5e458af7e11f257d9e0, type: 3}
   coinIconScale: 1
   coinIconPadding: 8
+--- !u!114 &816899921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816899917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb5ea723f95c614dba26fc6cf39cd60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SideEnvironmentSpawner
+  looper: {fileID: 0}
+  autoFindLooper: 1
+  laneCenters: []
+  autoDetectLaneBoundsFromTrack: 1
+  totalBuildings: 28
+  recycleSpacingRange: {x: 4.5, y: 10}
+  initialExtraAheadDistance: 30
+  sideDistanceFromLaneRange: {x: 8.5, y: 8.5}
+  sideClearanceFromTrack: 1
+  sideGlobalXOffset: -4
+  sideWidthRange: {x: 0.6, y: 1}
+  sideDepthRange: {x: 0.6, y: 1}
+  sideHeightRange: {x: 1, y: 2}
+  sideGroundOffsetY: -1.5
+  sideRandomYaw: 0
+  useSymmetricSides: 1
+  sideBuildingPrefabs:
+  - {fileID: 1212380520111254, guid: 562df8355904213468a690c4ce6740b6, type: 3}
+  - {fileID: 1199332134306268, guid: 1e198ff9400b5064c816d8f779eff296, type: 3}
+  - {fileID: 1934853517836424, guid: 931ecb32d754b3f40afc9a688c8cea66, type: 3}
+  - {fileID: 1421433746022104, guid: 84bb406b82cecb24cb1ffe5d4359339d, type: 3}
+  useWeightedSidePrefabs: 1
+  weightedSideBuildingPrefabs: []
+  despawnPassedDistance: 0
 --- !u!1 &879354098
 GameObject:
   m_ObjectHideFlags: 0

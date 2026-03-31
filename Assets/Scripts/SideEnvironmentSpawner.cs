@@ -25,6 +25,10 @@ public class SideEnvironmentSpawner : MonoBehaviour
 
     [Header("Placement")]
     [SerializeField] private Vector2 sideDistanceFromLaneRange = new Vector2(3.5f, 8f);
+    [Tooltip("Extra clearance from the track edge to avoid overlap.")]
+    [SerializeField] private float sideClearanceFromTrack = 0.25f;
+    [Tooltip("Global X offset applied to all side buildings.")]
+    [SerializeField] private float sideGlobalXOffset = 0f;
     [SerializeField] private Vector2 sideWidthRange = new Vector2(2f, 6f);
     [SerializeField] private Vector2 sideDepthRange = new Vector2(2f, 6f);
     [SerializeField] private Vector2 sideHeightRange = new Vector2(6f, 22f);
@@ -141,9 +145,8 @@ public class SideEnvironmentSpawner : MonoBehaviour
                         continue;
                     }
 
-                    float x = r.bounds.center.x;
-                    minX = Mathf.Min(minX, x);
-                    maxX = Mathf.Max(maxX, x);
+                    minX = Mathf.Min(minX, r.bounds.min.x);
+                    maxX = Mathf.Max(maxX, r.bounds.max.x);
                     foundAny = true;
                 }
             }
@@ -253,14 +256,14 @@ public class SideEnvironmentSpawner : MonoBehaviour
         }
 
         float anchorX = sideSign < 0f ? laneLeftX : laneRightX;
-        float lateralOffset = RandomRange(rng, sideDistanceFromLaneRange);
+        float lateralOffset = RandomRange(rng, sideDistanceFromLaneRange) + sideClearanceFromTrack;
 
         float width = RandomRange(rng, sideWidthRange);
         float depth = RandomRange(rng, sideDepthRange);
         float height = RandomRange(rng, sideHeightRange);
 
         Vector3 pos = axisPoint;
-        pos.x = anchorX + sideSign * lateralOffset;
+        pos.x = anchorX + sideSign * lateralOffset + sideGlobalXOffset;
         pos.y = sideGroundOffsetY + (height * 0.5f);
 
         t.position = pos;
