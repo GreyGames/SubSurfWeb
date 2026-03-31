@@ -29,12 +29,25 @@ public class SideEnvironmentSpawner : MonoBehaviour
     [SerializeField] private float sideClearanceFromTrack = 0.25f;
     [Tooltip("Global X offset applied to all side buildings.")]
     [SerializeField] private float sideGlobalXOffset = 0f;
+    [Tooltip("Extra X offset applied only to left-side buildings.")]
+    [SerializeField] private float leftSideXOffset = 0f;
+    [Tooltip("Extra X offset applied only to right-side buildings.")]
+    [SerializeField] private float rightSideXOffset = 0f;
     [SerializeField] private Vector2 sideWidthRange = new Vector2(2f, 6f);
     [SerializeField] private Vector2 sideDepthRange = new Vector2(2f, 6f);
     [SerializeField] private Vector2 sideHeightRange = new Vector2(6f, 22f);
     [SerializeField] private float sideGroundOffsetY = 0f;
     [SerializeField] private bool sideRandomYaw = true;
     [SerializeField] private bool useSymmetricSides = true;
+    [Tooltip("If true, apply an extra yaw offset to buildings on the left side.")]
+    [SerializeField] private bool applyLeftSideYawOffset = false;
+    [SerializeField] private float leftSideYawOffsetDegrees = 180f;
+
+    [Header("Lane Bounds")]
+    [Tooltip("Ignore these layers when auto-detecting lane bounds from track renderers.")]
+    [SerializeField] private LayerMask laneBoundsIgnoreLayers = 0;
+    [Tooltip("Ignore renderer names that start with any of these prefixes.")]
+    [SerializeField] private string[] laneBoundsIgnoreNamePrefixes;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject[] sideBuildingPrefabs;
@@ -141,6 +154,10 @@ public class SideEnvironmentSpawner : MonoBehaviour
 
                     string n = r.gameObject.name;
                     if (n.StartsWith("SideBuilding_Runtime") || n == "Obstacle_Runtime")
+                    {
+                        continue;
+                    }
+                    if (ShouldIgnoreLaneBoundsRenderer(r, n))
                     {
                         continue;
                     }
@@ -263,7 +280,8 @@ public class SideEnvironmentSpawner : MonoBehaviour
         float height = RandomRange(rng, sideHeightRange);
 
         Vector3 pos = axisPoint;
-        pos.x = anchorX + sideSign * lateralOffset + sideGlobalXOffset;
+        float sideSpecificOffset = sideSign < 0f ? leftSideXOffset : rightSideXOffset;
+        pos.x = anchorX + sideSign * lateralOffset + sideGlobalXOffset + sideSpecificOffset;
         pos.y = sideGroundOffsetY + (height * 0.5f);
 
         t.position = pos;
@@ -271,11 +289,21 @@ public class SideEnvironmentSpawner : MonoBehaviour
 
         if (sideRandomYaw)
         {
-            t.rotation = Quaternion.Euler(0f, RandomRange(rng, 0f, 360f), 0f);
+            float yaw = RandomRange(rng, 0f, 360f);
+            if (applyLeftSideYawOffset && sideSign < 0f)
+            {
+                yaw += leftSideYawOffsetDegrees;
+            }
+            t.rotation = Quaternion.Euler(0f, yaw, 0f);
         }
         else
         {
-            t.rotation = Quaternion.identity;
+            float yaw = 0f;
+            if (applyLeftSideYawOffset && sideSign < 0f)
+            {
+                yaw += leftSideYawOffsetDegrees;
+            }
+            t.rotation = Quaternion.Euler(0f, yaw, 0f);
         }
 
         if (!t.gameObject.activeSelf)
@@ -373,5 +401,32 @@ public class SideEnvironmentSpawner : MonoBehaviour
         float a = Mathf.Min(min, max);
         float b = Mathf.Max(min, max);
         return Mathf.Lerp(a, b, (float)random.NextDouble());
+    }
+
+    private bool ShouldIgnoreLaneBoundsRenderer(Renderer r, string rendererName)
+    {
+        if (r == null)
+        {
+            return true;
+        }
+
+        if (((1 << r.gameObject.layer) & laneBoundsIgnoreLayers.value) != 0)
+        {
+            return true;
+        }
+
+        if (laneBoundsIgnoreNamePrefixes != null && laneBoundsIgnoreNamePrefixes.Length > 0)
+        {
+            for (int i = 0; i < laneBoundsIgnoreNamePrefixes.Length; i++)
+            {
+                string prefix = laneBoundsIgnoreNamePrefixes[i];
+                if (!string.IsNullOrEmpty(prefix) && rendererName.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

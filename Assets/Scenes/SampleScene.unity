@@ -170,12 +170,12 @@ MonoBehaviour:
   randomizeYaw: 0
   yawOptions:
   - 0
-  obstaclePrefab: {fileID: 0}
+  obstaclePrefab: {fileID: 1718881139866272103, guid: d84787863a48b884e8c303159510c801, type: 3}
   obstacleLaneCenters: []
   autoDetectLaneCenters: 1
   obstacleSpawnChance: 0.7
   obstacleForwardDistanceRange: {x: 4, y: 10}
-  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleLocalOffset: {x: 0, y: 0, z: 0}
   obstacleZeroRotation: 1
   obstacleLocalScale: {x: 1, y: 1, z: 1}
   enableCoinLine: 1
@@ -192,7 +192,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 20
+  coinValue: 2
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -261,12 +261,12 @@ MonoBehaviour:
   randomizeYaw: 0
   yawOptions:
   - 0
-  obstaclePrefab: {fileID: 0}
+  obstaclePrefab: {fileID: 2922220883736789182, guid: 041e4e3100f07184cacfe35dce34f022, type: 3}
   obstacleLaneCenters: []
   autoDetectLaneCenters: 1
   obstacleSpawnChance: 0.7
   obstacleForwardDistanceRange: {x: 4, y: 10}
-  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleLocalOffset: {x: 0, y: 0, z: 0}
   obstacleZeroRotation: 1
   obstacleLocalScale: {x: 1, y: 1, z: 1}
   enableCoinLine: 1
@@ -283,7 +283,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 20
+  coinValue: 2
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -667,8 +667,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 0.9622642, g: 0.871613, b: 0.6309185, a: 1}
+  m_Intensity: 0.73
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -730,13 +730,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.012868217, y: -0.9919419, z: 0.11816503, w: -0.043849763}
+  m_LocalPosition: {x: 0, y: 3.12, z: 49.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 13.491, y: -185.313, z: -2.115}
 --- !u!1 &816899917
 GameObject:
   m_ObjectHideFlags: 0
@@ -789,10 +789,10 @@ MonoBehaviour:
   - {fileID: 460903164}
   applyFog: 1
   fogMode: 1
-  fogColor: {r: 0.75, g: 0.8, b: 0.88, a: 1}
-  fogStartDistance: 45
-  fogEndDistance: 130
-  fogDensity: 1
+  fogColor: {r: 0.74875396, g: 0.8031328, b: 0.8867924, a: 1}
+  fogStartDistance: 15
+  fogEndDistance: 180
+  fogDensity: 900
 --- !u!4 &816899919
 Transform:
   m_ObjectHideFlags: 0
@@ -867,20 +867,27 @@ MonoBehaviour:
   totalBuildings: 28
   recycleSpacingRange: {x: 4.5, y: 10}
   initialExtraAheadDistance: 30
-  sideDistanceFromLaneRange: {x: 8.5, y: 8.5}
+  sideDistanceFromLaneRange: {x: 4.4, y: 4.4}
   sideClearanceFromTrack: 1
-  sideGlobalXOffset: -4
-  sideWidthRange: {x: 0.6, y: 1}
-  sideDepthRange: {x: 0.6, y: 1}
-  sideHeightRange: {x: 1, y: 2}
-  sideGroundOffsetY: -1.5
+  sideGlobalXOffset: -3.85
+  leftSideXOffset: 7
+  rightSideXOffset: 0
+  sideWidthRange: {x: 0.7, y: 0.7}
+  sideDepthRange: {x: 0.7, y: 0.7}
+  sideHeightRange: {x: 1, y: 1.1}
+  sideGroundOffsetY: -0.1
   sideRandomYaw: 0
   useSymmetricSides: 1
+  applyLeftSideYawOffset: 1
+  leftSideYawOffsetDegrees: 180
+  laneBoundsIgnoreLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  laneBoundsIgnoreNamePrefixes: []
   sideBuildingPrefabs:
   - {fileID: 1212380520111254, guid: 562df8355904213468a690c4ce6740b6, type: 3}
   - {fileID: 1199332134306268, guid: 1e198ff9400b5064c816d8f779eff296, type: 3}
   - {fileID: 1934853517836424, guid: 931ecb32d754b3f40afc9a688c8cea66, type: 3}
-  - {fileID: 1421433746022104, guid: 84bb406b82cecb24cb1ffe5d4359339d, type: 3}
   useWeightedSidePrefabs: 1
   weightedSideBuildingPrefabs: []
   despawnPassedDistance: 0
@@ -996,6 +1003,119 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 879354098}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &945727515
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 945727516}
+  - component: {fileID: 945727519}
+  - component: {fileID: 945727518}
+  - component: {fileID: 945727517}
+  m_Layer: 6
+  m_Name: LaneSideWalk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &945727516
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945727515}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: -0.5201, z: 109.8961}
+  m_LocalScale: {x: 23.08583, y: 1, z: 5.3151927}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1121488367}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!64 &945727517
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945727515}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &945727518
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945727515}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 826ead3abf95f194996cb8156de6f671, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &945727519
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945727515}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &963194225
 GameObject:
@@ -1641,7 +1761,9 @@ Transform:
   m_Children:
   - {fileID: 1356897925}
   - {fileID: 490041191}
+  - {fileID: 1315812110}
   - {fileID: 1263163109}
+  - {fileID: 945727516}
   m_Father: {fileID: 816899919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1121488368
@@ -1660,12 +1782,12 @@ MonoBehaviour:
   randomizeYaw: 0
   yawOptions:
   - 0
-  obstaclePrefab: {fileID: 0}
+  obstaclePrefab: {fileID: 793685457875359081, guid: 9c92406c14c380849bca38280c133c64, type: 3}
   obstacleLaneCenters: []
   autoDetectLaneCenters: 1
   obstacleSpawnChance: 0.7
   obstacleForwardDistanceRange: {x: 4, y: 10}
-  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleLocalOffset: {x: 0, y: 0, z: 0}
   obstacleZeroRotation: 1
   obstacleLocalScale: {x: 1, y: 1, z: 1}
   enableCoinLine: 1
@@ -1682,7 +1804,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 20
+  coinValue: 2
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -1903,6 +2025,119 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1315812109
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1315812110}
+  - component: {fileID: 1315812113}
+  - component: {fileID: 1315812112}
+  - component: {fileID: 1315812111}
+  m_Layer: 6
+  m_Name: LaneRoad
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1315812110
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315812109}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.0123, y: -0.5, z: 83.2563}
+  m_LocalScale: {x: 17.757969, y: 1, z: 0.79186237}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1121488367}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!64 &1315812111
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315812109}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1315812112
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315812109}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 71a9ae5f2f6e8cf41b0f09f400729fe6, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1315812113
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315812109}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1356897924
 GameObject:
   m_ObjectHideFlags: 0
@@ -2534,12 +2769,12 @@ MonoBehaviour:
   randomizeYaw: 0
   yawOptions:
   - 0
-  obstaclePrefab: {fileID: 0}
+  obstaclePrefab: {fileID: 3786326439804512758, guid: f4e73d783d681e04ca355f6c8a50af8e, type: 3}
   obstacleLaneCenters: []
   autoDetectLaneCenters: 1
   obstacleSpawnChance: 0.7
   obstacleForwardDistanceRange: {x: 4, y: 10}
-  obstacleLocalOffset: {x: 0, y: 0.5, z: 0}
+  obstacleLocalOffset: {x: 0, y: 0, z: 0}
   obstacleZeroRotation: 1
   obstacleLocalScale: {x: 1, y: 1, z: 1}
   enableCoinLine: 1
@@ -2556,7 +2791,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 20
+  coinValue: 2
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
