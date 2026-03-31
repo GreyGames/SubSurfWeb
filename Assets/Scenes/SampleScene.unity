@@ -730,13 +730,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.012868217, y: -0.9919419, z: 0.11816503, w: -0.043849763}
+  m_LocalRotation: {x: 0.019687183, y: -0.99661773, z: 0.07465418, w: -0.0281475}
   m_LocalPosition: {x: 0, y: 3.12, z: 49.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 13.491, y: -185.313, z: -2.115}
+  m_LocalEulerAnglesHint: {x: 8.493, y: -183.423, z: -2.518}
 --- !u!1 &816899917
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,9 +790,9 @@ MonoBehaviour:
   applyFog: 1
   fogMode: 1
   fogColor: {r: 0.74875396, g: 0.8031328, b: 0.8867924, a: 1}
-  fogStartDistance: 15
-  fogEndDistance: 180
-  fogDensity: 900
+  fogStartDistance: 4
+  fogEndDistance: 120
+  fogDensity: 6000
 --- !u!4 &816899919
 Transform:
   m_ObjectHideFlags: 0
