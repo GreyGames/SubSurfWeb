@@ -90,6 +90,16 @@ public class SlowMoZone : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        if (isActive || pendingDeactivate || overlapCount > 0)
+        {
+            overlapCount = 0;
+            pendingDeactivate = false;
+            DeactivateSlowMo();
+        }
+    }
+
     public void SetSlowScale(float scale)
     {
         slowTimeScale = Mathf.Clamp(scale, 0.05f, 1f);

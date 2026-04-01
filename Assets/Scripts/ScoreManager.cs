@@ -27,6 +27,7 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private float coinsFontScale = 2f;
     [SerializeField] private float coinsMobileScale = 2f;
     [SerializeField] private bool forceMobileCoinsScale = false;
+    [SerializeField] private bool treatPortraitAsMobile = true;
     [SerializeField] private bool useSafeArea = true;
     [SerializeField] private bool showCoinsOnHUD = true;
     [SerializeField] private float hudLineSpacing = 2f;
@@ -41,6 +42,8 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private float coinMultiplierPopupFontScale = 3.0f;
     [SerializeField] private Vector2 coinMultiplierPopupOffset = new Vector2(0f, 200f);
     [SerializeField] private Color coinMultiplierPopupColor = new Color(1f, 0.9f, 0.3f, 1f);
+    [SerializeField] private bool useSeparatePopupMobileScale = true;
+    [SerializeField] private float coinMultiplierPopupMobileScale = 0.6f;
 
     private float score;
     private float distance;
@@ -243,7 +246,7 @@ public class ScoreManager : MonoBehaviour
 
         int scoreHudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, scoreFontScale));
         int highScoreHudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, highScoreFontScale));
-        float coinScale = (forceMobileCoinsScale || Application.isMobilePlatform)
+        float coinScale = (forceMobileCoinsScale || Application.isMobilePlatform || (treatPortraitAsMobile && Screen.height > Screen.width))
             ? Mathf.Max(0.1f, coinsMobileScale)
             : 1f;
         int coinHudFontSize = Mathf.RoundToInt(centeredBaseFontSize * Mathf.Max(1f, coinsFontScale) * coinScale);
@@ -380,8 +383,8 @@ public class ScoreManager : MonoBehaviour
             return;
         }
 
-        float scale = (forceMobileCoinsScale || Application.isMobilePlatform)
-            ? Mathf.Max(0.1f, coinsMobileScale)
+        float scale = (forceMobileCoinsScale || Application.isMobilePlatform || (treatPortraitAsMobile && Screen.height > Screen.width))
+            ? Mathf.Max(0.1f, useSeparatePopupMobileScale ? coinMultiplierPopupMobileScale : coinsMobileScale)
             : 1f;
         coinPopupStyle.fontSize = Mathf.RoundToInt(baseFontSize * Mathf.Max(0.5f, coinMultiplierPopupFontScale) * scale);
         coinPopupStyle.normal.textColor = coinMultiplierPopupColor;

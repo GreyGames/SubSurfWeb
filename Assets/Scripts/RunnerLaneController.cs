@@ -70,7 +70,7 @@ public class RunnerLaneController : MonoBehaviour
     [SerializeField] private Sprite heartFullSprite;
     [SerializeField] private Sprite heartEmptySprite;
     [SerializeField] private Color heartFullColor = new Color(0.85f, 0.12f, 0.12f, 1f);
-    [SerializeField] private Color heartEmptyColor = new Color(0.2f, 0.2f, 0.2f, 0.7f);
+    [SerializeField] private Color heartEmptyColor = new Color(0.85f, 0.12f, 0.12f, 1f);
     [SerializeField] private float heartFlickerSeconds = 0.5f;
     [SerializeField] private float heartFlickerInterval = 0.08f;
     [SerializeField] private float gameOverFadeDuration = 0.8f;

@@ -211,6 +211,16 @@ MonoBehaviour:
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
   slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  showSlowMoMarker: 1
+  slowMoMarkerPrefab: {fileID: 7194491603780009671, guid: c4cce392df8549a45888a2ff76d2d2f9, type: 3}
+  slowMoMarkerText: x2
+  slowMoMarkerLocalOffset: {x: 0, y: 0.5, z: 0}
+  slowMoMarkerFontSize: 90
+  slowMoMarkerCharacterSize: 0.06
+  slowMoMarkerColor: {r: 0.11792451, g: 0.7793186, b: 1, a: 1}
+  slowMoMarkerSpinDegreesPerSecond: 90
+  slowMoMarkerFloatAmplitude: 0.15
+  slowMoMarkerFloatSpeed: 2
   useNamedLaneCentersForSlowMo: 1
   slowMoLeftLaneName: CenterLeft
   slowMoRightLaneName: CenterRight
@@ -306,6 +316,16 @@ MonoBehaviour:
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
   slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  showSlowMoMarker: 1
+  slowMoMarkerPrefab: {fileID: 7194491603780009671, guid: c4cce392df8549a45888a2ff76d2d2f9, type: 3}
+  slowMoMarkerText: x2
+  slowMoMarkerLocalOffset: {x: 0, y: 0.5, z: 0}
+  slowMoMarkerFontSize: 90
+  slowMoMarkerCharacterSize: 0.06
+  slowMoMarkerColor: {r: 0.11792451, g: 0.7793186, b: 1, a: 1}
+  slowMoMarkerSpinDegreesPerSecond: 90
+  slowMoMarkerFloatAmplitude: 0.15
+  slowMoMarkerFloatSpeed: 2
   useNamedLaneCentersForSlowMo: 1
   slowMoLeftLaneName: CenterLeft
   slowMoRightLaneName: CenterRight
@@ -874,8 +894,9 @@ MonoBehaviour:
   scoreFontScale: 4
   highScoreFontScale: 1.8
   coinsFontScale: 2
-  coinsMobileScale: 12
+  coinsMobileScale: 4
   forceMobileCoinsScale: 0
+  treatPortraitAsMobile: 1
   useSafeArea: 1
   showCoinsOnHUD: 1
   hudLineSpacing: 2
@@ -888,8 +909,10 @@ MonoBehaviour:
   coinMultiplierColor: {r: 1, g: 0.9, b: 0.3, a: 1}
   showCoinMultiplierPopup: 1
   coinMultiplierPopupFontScale: 1.6
-  coinMultiplierPopupOffset: {x: 0, y: 140}
+  coinMultiplierPopupOffset: {x: 0, y: 203.8}
   coinMultiplierPopupColor: {r: 1, g: 0.9, b: 0.3, a: 1}
+  useSeparatePopupMobileScale: 1
+  coinMultiplierPopupMobileScale: 0.6
 --- !u!114 &816899921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1960,6 +1983,16 @@ MonoBehaviour:
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
   slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  showSlowMoMarker: 1
+  slowMoMarkerPrefab: {fileID: 7194491603780009671, guid: c4cce392df8549a45888a2ff76d2d2f9, type: 3}
+  slowMoMarkerText: x2
+  slowMoMarkerLocalOffset: {x: 0, y: 0.5, z: 0}
+  slowMoMarkerFontSize: 90
+  slowMoMarkerCharacterSize: 0.06
+  slowMoMarkerColor: {r: 0.11792451, g: 0.7793186, b: 1, a: 1}
+  slowMoMarkerSpinDegreesPerSecond: 90
+  slowMoMarkerFloatAmplitude: 0.15
+  slowMoMarkerFloatSpeed: 2
   useNamedLaneCentersForSlowMo: 1
   slowMoLeftLaneName: CenterLeft
   slowMoRightLaneName: CenterRight
@@ -2894,6 +2927,16 @@ MonoBehaviour:
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
   slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  showSlowMoMarker: 1
+  slowMoMarkerPrefab: {fileID: 7194491603780009671, guid: c4cce392df8549a45888a2ff76d2d2f9, type: 3}
+  slowMoMarkerText: x2
+  slowMoMarkerLocalOffset: {x: 0, y: 0.5, z: 0}
+  slowMoMarkerFontSize: 90
+  slowMoMarkerCharacterSize: 0.06
+  slowMoMarkerColor: {r: 0.11792451, g: 0.7793186, b: 1, a: 1}
+  slowMoMarkerSpinDegreesPerSecond: 90
+  slowMoMarkerFloatAmplitude: 0.15
+  slowMoMarkerFloatSpeed: 2
   useNamedLaneCentersForSlowMo: 1
   slowMoLeftLaneName: CenterLeft
   slowMoRightLaneName: CenterRight
@@ -3209,9 +3252,9 @@ MonoBehaviour:
   heartSpacing: 6
   heartScale: 1
   heartFullSprite: {fileID: 21300000, guid: 903e9e53bfeef224b9c170b7b2a6b9b8, type: 3}
-  heartEmptySprite: {fileID: 21300000, guid: 7e203055584d4f14887ff7cd542c6d46, type: 3}
+  heartEmptySprite: {fileID: 21300000, guid: 903e9e53bfeef224b9c170b7b2a6b9b8, type: 3}
   heartFullColor: {r: 0.24723008, g: 0.9433962, b: 0.048949808, a: 1}
-  heartEmptyColor: {r: 0.2, g: 0.2, b: 0.2, a: 0.7}
+  heartEmptyColor: {r: 0.4405482, g: 0.9433962, b: 0.44054824, a: 0.25882354}
   heartFlickerSeconds: 0.5
   heartFlickerInterval: 0.08
   gameOverFadeDuration: 0.8

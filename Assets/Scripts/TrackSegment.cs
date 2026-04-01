@@ -60,6 +60,17 @@ public class TrackSegment : MonoBehaviour
     [SerializeField] private float slowMoVisualHeight = 0.06f;
     [SerializeField] private float slowMoVisualYOffset = 0.01f;
     [SerializeField] private Material slowMoVisualMaterial;
+    [Header("SlowMo Marker")]
+    [SerializeField] private bool showSlowMoMarker = true;
+    [SerializeField] private GameObject slowMoMarkerPrefab;
+    [SerializeField] private string slowMoMarkerText = "x2";
+    [SerializeField] private Vector3 slowMoMarkerLocalOffset = new Vector3(0f, 2.5f, 0f);
+    [SerializeField] private float slowMoMarkerFontSize = 90f;
+    [SerializeField] private float slowMoMarkerCharacterSize = 0.06f;
+    [SerializeField] private Color slowMoMarkerColor = new Color(1f, 0.9f, 0.3f, 1f);
+    [SerializeField] private float slowMoMarkerSpinDegreesPerSecond = 90f;
+    [SerializeField] private float slowMoMarkerFloatAmplitude = 0.15f;
+    [SerializeField] private float slowMoMarkerFloatSpeed = 2f;
     [SerializeField] private bool useNamedLaneCentersForSlowMo = true;
     [SerializeField] private string slowMoLeftLaneName = "CenterLeft";
     [SerializeField] private string slowMoRightLaneName = "CenterRight";
@@ -72,6 +83,9 @@ public class TrackSegment : MonoBehaviour
     private GameObject slowMoZoneVisual;
     private MeshRenderer slowMoZoneRenderer;
     private Material slowMoZoneMaterial;
+    private GameObject slowMoMarkerObject;
+    private TextMesh slowMoMarkerTextMesh;
+    private SlowMoMarkerFloatSpin slowMoMarkerSpin;
     private static int segmentsSinceSlowMo = 1000;
     private static int segmentsSinceCoinLine = 1000;
     private readonly List<CoinPickup> pooledCoins = new List<CoinPickup>(12);
@@ -187,7 +201,11 @@ public class TrackSegment : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform child = transform.GetChild(i);
-            if (child == null || child.name == "Obstacle_Runtime" || child.name == "Coin_Runtime" || child.name.StartsWith("SideBuilding_Runtime"))
+            if (child == null ||
+                child.name == "Obstacle_Runtime" ||
+                child.name == "Coin_Runtime" ||
+                child.name.StartsWith("SideBuilding_Runtime") ||
+                child.name.StartsWith("SlowMo"))
             {
                 continue;
             }
@@ -633,6 +651,7 @@ public class TrackSegment : MonoBehaviour
         slowMoZoneCollider.isTrigger = true;
         slowMoZone = slowMoZoneObject.AddComponent<SlowMoZone>();
         EnsureSlowMoVisual();
+        EnsureSlowMoMarker();
     }
 
     private void EnsureSlowMoVisual()
@@ -685,6 +704,42 @@ public class TrackSegment : MonoBehaviour
         UpdateSlowMoVisual();
     }
 
+    private void EnsureSlowMoMarker()
+    {
+        if (slowMoMarkerObject != null)
+        {
+            return;
+        }
+
+        if (slowMoMarkerPrefab != null)
+        {
+            slowMoMarkerObject = Instantiate(slowMoMarkerPrefab, slowMoZoneObject.transform);
+            slowMoMarkerObject.name = "SlowMoMarker";
+        }
+        else
+        {
+            slowMoMarkerObject = new GameObject("SlowMoMarker");
+            slowMoMarkerObject.transform.SetParent(slowMoZoneObject.transform, false);
+
+            slowMoMarkerTextMesh = slowMoMarkerObject.AddComponent<TextMesh>();
+            slowMoMarkerTextMesh.text = slowMoMarkerText;
+            slowMoMarkerTextMesh.anchor = TextAnchor.MiddleCenter;
+            slowMoMarkerTextMesh.alignment = TextAlignment.Center;
+            slowMoMarkerTextMesh.color = slowMoMarkerColor;
+            slowMoMarkerTextMesh.fontSize = Mathf.RoundToInt(Mathf.Max(10f, slowMoMarkerFontSize));
+            slowMoMarkerTextMesh.characterSize = Mathf.Max(0.001f, slowMoMarkerCharacterSize);
+        }
+
+        slowMoMarkerSpin = slowMoMarkerObject.GetComponent<SlowMoMarkerFloatSpin>();
+        if (slowMoMarkerSpin == null)
+        {
+            slowMoMarkerSpin = slowMoMarkerObject.AddComponent<SlowMoMarkerFloatSpin>();
+        }
+        slowMoMarkerSpin.Configure(slowMoMarkerSpinDegreesPerSecond, slowMoMarkerFloatAmplitude, slowMoMarkerFloatSpeed);
+        slowMoMarkerSpin.SetBaseLocalPosition(slowMoMarkerLocalOffset);
+    }
+
+
     private void UpdateSlowMoVisual()
     {
         if (slowMoZoneVisual == null || slowMoZoneRenderer == null)
@@ -697,6 +752,23 @@ public class TrackSegment : MonoBehaviour
         visualScale.y = slowMoVisualHeight;
         slowMoZoneVisual.transform.localScale = visualScale;
         slowMoZoneVisual.transform.localPosition = new Vector3(0f, -slowMoZoneLocalOffset.y + slowMoVisualHeight * 0.5f + slowMoVisualYOffset, 0f);
+
+        if (slowMoMarkerObject != null)
+        {
+            slowMoMarkerObject.SetActive(showSlowMoMarker);
+            if (slowMoMarkerSpin != null)
+            {
+                slowMoMarkerSpin.Configure(slowMoMarkerSpinDegreesPerSecond, slowMoMarkerFloatAmplitude, slowMoMarkerFloatSpeed);
+                slowMoMarkerSpin.SetBaseLocalPosition(slowMoMarkerLocalOffset);
+            }
+            if (slowMoMarkerTextMesh != null)
+            {
+                slowMoMarkerTextMesh.text = slowMoMarkerText;
+                slowMoMarkerTextMesh.color = slowMoMarkerColor;
+                slowMoMarkerTextMesh.fontSize = Mathf.RoundToInt(Mathf.Max(10f, slowMoMarkerFontSize));
+                slowMoMarkerTextMesh.characterSize = Mathf.Max(0.001f, slowMoMarkerCharacterSize);
+            }
+        }
 
         if (slowMoZoneMaterial != null)
         {
