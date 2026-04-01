@@ -1,7 +1,14 @@
 fileFormatVersion: 2
 guid: ea15e3bc19ae80c4a86ee5381839f2fa
+AssetOrigin:
+  serializedVersion: 1
+  productId: 326131
+  packageName: npc_casual_set_00
+  packageVersion: 1.0.3
+  assetPath: Assets/npc_casual_set_00/Mesh/Mesh_Parts/npc_csl_shirtopenrolled_00m_sleeves.fbx
+  uploadId: 807672
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -21,8 +28,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -41,7 +46,7 @@ ModelImporter:
   meshes:
     lODScreenPercentages: []
     globalScale: 1
-    meshCompression: 0
+    meshCompression: 2
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
@@ -63,6 +68,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -749,8 +757,7 @@ ModelImporter:
     - name: RightHandProp
       parentName: RightHand
       position: {x: 0.07249664, y: 0.02021976, z: -0.0038000562}
-      rotation: {x: 0.00000005960463, y: 0.000000048428763, z: -0.0000000032596283,
-        w: 1}
+      rotation: {x: 0.00000005960463, y: 0.000000048428763, z: -0.0000000032596283, w: 1}
       scale: {x: 0.99999994, y: 1.000001, z: 1.0000004}
     - name: RightHandRing1
       parentName: RightHand
@@ -834,8 +841,7 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 4350b309aa35d8241b5a918441629bdc,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 4350b309aa35d8241b5a918441629bdc, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
@@ -847,10 +853,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 326131
-  packageName: npc_casual_set_00
-  packageVersion: 1.0.3
-  assetPath: Assets/npc_casual_set_00/Mesh/Mesh_Parts/npc_csl_shirtopenrolled_00m_sleeves.fbx
-  uploadId: 807672
