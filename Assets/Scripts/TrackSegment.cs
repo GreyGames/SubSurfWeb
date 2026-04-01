@@ -53,12 +53,16 @@ public class TrackSegment : MonoBehaviour
     [SerializeField] private float slowMoZoneEdgePadding = 3f;
     [SerializeField] private bool slowMoZonePreferFrontHalf = false;
     [SerializeField] private int slowMoMinSegmentsBetween = 3;
-    [SerializeField] private bool slowMoIncludeCenterLane = true;
+    [SerializeField] private bool slowMoIncludeCenterLane = false;
     [SerializeField] private float slowMoCenterOrbitDirection = 1f;
     [SerializeField] private bool showSlowMoVisual = true;
     [SerializeField] private Color slowMoVisualColor = new Color(0.2f, 0.85f, 1f, 0.5f);
     [SerializeField] private float slowMoVisualHeight = 0.06f;
     [SerializeField] private float slowMoVisualYOffset = 0.01f;
+    [SerializeField] private Material slowMoVisualMaterial;
+    [SerializeField] private bool useNamedLaneCentersForSlowMo = true;
+    [SerializeField] private string slowMoLeftLaneName = "CenterLeft";
+    [SerializeField] private string slowMoRightLaneName = "CenterRight";
 
     private GameObject pooledObstacle;
     private readonly List<Vector3> runtimeLaneLocalPositions = new List<Vector3>(3);
@@ -71,6 +75,8 @@ public class TrackSegment : MonoBehaviour
     private static int segmentsSinceSlowMo = 1000;
     private static int segmentsSinceCoinLine = 1000;
     private readonly List<CoinPickup> pooledCoins = new List<CoinPickup>(12);
+    private static Transform cachedSlowMoLeftLane;
+    private static Transform cachedSlowMoRightLane;
 
     public void OnRecycled(System.Random rng)
     {
@@ -291,36 +297,40 @@ public class TrackSegment : MonoBehaviour
         bool useOrbit = false;
         float cameraSide = 1f;
         float laneX;
-        if (slowMoIncludeCenterLane && sortedLanes.Count >= 3)
+
+        if (useNamedLaneCentersForSlowMo && TryGetNamedSlowMoLaneCenters(out float leftX, out float rightX))
         {
-            int choice = rng.Next(3); // 0=left, 1=middle, 2=right
-            if (choice == 1)
-            {
-                laneX = sortedLanes[1].x;
-                useOrbit = true;
-            }
-            else if (choice == 0)
-            {
-                laneX = sortedLanes[0].x;
-                cameraSide = -1f;
-            }
-            else
-            {
-                laneX = sortedLanes[sortedLanes.Count - 1].x;
-                cameraSide = 1f;
-            }
+            laneX = rng.Next(2) == 0 ? leftX : rightX;
+            cameraSide = Mathf.Approximately(laneX, leftX) ? -1f : 1f;
         }
         else
         {
-            bool leftLane = rng.Next(2) == 0;
-            laneX = leftLane ? sortedLanes[0].x : sortedLanes[sortedLanes.Count - 1].x;
-            cameraSide = leftLane ? -1f : 1f;
+            float minX = sortedLanes[0].x;
+            float maxX = sortedLanes[0].x;
+            for (int i = 1; i < sortedLanes.Count; i++)
+            {
+                float x = sortedLanes[i].x;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+            }
+
+            laneX = rng.Next(2) == 0 ? minX : maxX;
+            cameraSide = laneX < 0f ? -1f : 1f;
         }
 
         Vector3 zoneSize = slowMoZoneSize;
-        if (autoSizeSlowMoToLane && sortedLanes.Count >= 2)
+        if (autoSizeSlowMoToLane)
         {
-            float laneWidth = Mathf.Abs(sortedLanes[1].x - sortedLanes[0].x);
+            float laneWidth = 0f;
+            if (useNamedLaneCentersForSlowMo && TryGetNamedSlowMoLaneCenters(out float namedLeftX, out float namedRightX))
+            {
+                laneWidth = Mathf.Abs(namedRightX - namedLeftX) * 0.5f;
+            }
+            else if (sortedLanes.Count >= 2)
+            {
+                laneWidth = Mathf.Abs(sortedLanes[1].x - sortedLanes[0].x);
+            }
+
             if (laneWidth > 0.01f)
             {
                 zoneSize.x = Mathf.Max(0.5f, laneWidth * slowMoLaneWidthScale);
@@ -644,17 +654,33 @@ public class TrackSegment : MonoBehaviour
         }
 
         slowMoZoneRenderer = slowMoZoneVisual.GetComponent<MeshRenderer>();
-        Shader shader = Shader.Find("Unlit/Color");
-        if (shader == null)
+
+        if (slowMoVisualMaterial != null)
         {
-            shader = Shader.Find("Universal Render Pipeline/Unlit");
+            slowMoZoneMaterial = slowMoVisualMaterial;
         }
-        if (shader == null)
+        else
         {
-            shader = Shader.Find("Standard");
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null)
+            {
+                shader = Shader.Find("Unlit/Color");
+            }
+            if (shader == null)
+            {
+                shader = Shader.Find("Standard");
+            }
+
+            if (shader != null)
+            {
+                slowMoZoneMaterial = new Material(shader);
+            }
+            else
+            {
+                slowMoZoneMaterial = new Material(Shader.Find("Standard"));
+            }
         }
 
-        slowMoZoneMaterial = shader != null ? new Material(shader) : new Material(Shader.Find("Standard"));
         slowMoZoneRenderer.sharedMaterial = slowMoZoneMaterial;
         UpdateSlowMoVisual();
     }
@@ -682,6 +708,11 @@ public class TrackSegment : MonoBehaviour
             {
                 slowMoZoneMaterial.SetColor("_BaseColor", slowMoVisualColor);
             }
+            if (slowMoZoneMaterial.HasProperty("_EmissionColor"))
+            {
+                slowMoZoneMaterial.EnableKeyword("_EMISSION");
+                slowMoZoneMaterial.SetColor("_EmissionColor", slowMoVisualColor);
+            }
         }
     }
 
@@ -704,6 +735,49 @@ public class TrackSegment : MonoBehaviour
         List<Vector3> sorted = new List<Vector3>(runtimeLaneLocalPositions);
         sorted.Sort((a, b) => a.x.CompareTo(b.x));
         return sorted;
+    }
+
+    private bool TryGetNamedSlowMoLaneCenters(out float leftX, out float rightX)
+    {
+        leftX = 0f;
+        rightX = 0f;
+
+        if (cachedSlowMoLeftLane == null && !string.IsNullOrEmpty(slowMoLeftLaneName))
+        {
+            GameObject left = GameObject.Find(slowMoLeftLaneName);
+            if (left != null)
+            {
+                cachedSlowMoLeftLane = left.transform;
+            }
+        }
+
+        if (cachedSlowMoRightLane == null && !string.IsNullOrEmpty(slowMoRightLaneName))
+        {
+            GameObject right = GameObject.Find(slowMoRightLaneName);
+            if (right != null)
+            {
+                cachedSlowMoRightLane = right.transform;
+            }
+        }
+
+        if (cachedSlowMoLeftLane == null || cachedSlowMoRightLane == null)
+        {
+            return false;
+        }
+
+        Vector3 leftLocal = transform.InverseTransformPoint(cachedSlowMoLeftLane.position);
+        Vector3 rightLocal = transform.InverseTransformPoint(cachedSlowMoRightLane.position);
+        leftX = leftLocal.x;
+        rightX = rightLocal.x;
+
+        if (leftX > rightX)
+        {
+            float tmp = leftX;
+            leftX = rightX;
+            rightX = tmp;
+        }
+
+        return true;
     }
 
     private bool TryGetSegmentLocalZRange(out float minZ, out float maxZ)

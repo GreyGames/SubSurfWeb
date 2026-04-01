@@ -14,12 +14,12 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 0.75, g: 0.8, b: 0.88, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_LinearFogStart: 30
+  m_LinearFogEnd: 130
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 94d06995957dccc4ca026ad75e9e5c8d, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -192,7 +192,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 2
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -204,12 +204,16 @@ MonoBehaviour:
   slowMoZoneEdgePadding: 3
   slowMoZonePreferFrontHalf: 0
   slowMoMinSegmentsBetween: 3
-  slowMoIncludeCenterLane: 1
+  slowMoIncludeCenterLane: 0
   slowMoCenterOrbitDirection: 1
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
+  slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  useNamedLaneCentersForSlowMo: 1
+  slowMoLeftLaneName: CenterLeft
+  slowMoRightLaneName: CenterRight
 --- !u!1 &460903163
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,7 +287,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 2
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -295,12 +299,16 @@ MonoBehaviour:
   slowMoZoneEdgePadding: 3
   slowMoZonePreferFrontHalf: 0
   slowMoMinSegmentsBetween: 3
-  slowMoIncludeCenterLane: 1
+  slowMoIncludeCenterLane: 0
   slowMoCenterOrbitDirection: 1
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
+  slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  useNamedLaneCentersForSlowMo: 1
+  slowMoLeftLaneName: CenterLeft
+  slowMoRightLaneName: CenterRight
 --- !u!1 &490041190
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,7 +390,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e0ecd2d7a849ffa4cbfba4ba4f5ea88e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -495,7 +503,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e0ecd2d7a849ffa4cbfba4ba4f5ea88e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -650,6 +658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
+  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -668,7 +677,7 @@ Light:
   serializedVersion: 13
   m_Type: 1
   m_Color: {r: 0.9622642, g: 0.871613, b: 0.6309185, a: 1}
-  m_Intensity: 0.73
+  m_Intensity: 0.7
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -730,13 +739,42 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.019687183, y: -0.99661773, z: 0.07465418, w: -0.0281475}
-  m_LocalPosition: {x: 0, y: 3.12, z: 49.65}
+  m_LocalRotation: {x: 0.019776449, y: -0.9948723, z: 0.09691199, w: -0.021121792}
+  m_LocalPosition: {x: -0.0013186033, y: 3.1155722, z: 49.650692}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 8.493, y: -183.423, z: -2.518}
+--- !u!114 &705507996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705507993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &816899917
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,12 +825,6 @@ MonoBehaviour:
   - {fileID: 376474454}
   - {fileID: 1728085853}
   - {fileID: 460903164}
-  applyFog: 1
-  fogMode: 1
-  fogColor: {r: 0.74875396, g: 0.8031328, b: 0.8867924, a: 1}
-  fogStartDistance: 4
-  fogEndDistance: 100
-  fogDensity: 1
 --- !u!4 &816899919
 Transform:
   m_ObjectHideFlags: 0
@@ -842,12 +874,22 @@ MonoBehaviour:
   scoreFontScale: 4
   highScoreFontScale: 1.8
   coinsFontScale: 2
+  coinsMobileScale: 2
+  forceMobileCoinsScale: 0
   useSafeArea: 1
   showCoinsOnHUD: 1
   hudLineSpacing: 2
   coinIcon: {fileID: 21300000, guid: fc0e79dc0895f5e458af7e11f257d9e0, type: 3}
   coinIconScale: 1
   coinIconPadding: 8
+  showCoinMultiplierOnHUD: 1
+  coinMultiplierFontScale: 0.8
+  coinMultiplierPadding: 6
+  coinMultiplierColor: {r: 1, g: 0.9, b: 0.3, a: 1}
+  showCoinMultiplierPopup: 1
+  coinMultiplierPopupFontScale: 1.6
+  coinMultiplierPopupOffset: {x: 0, y: 140}
+  coinMultiplierPopupColor: {r: 1, g: 0.9, b: 0.3, a: 1}
 --- !u!114 &816899921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -892,6 +934,55 @@ MonoBehaviour:
   useWeightedSidePrefabs: 0
   weightedSideBuildingPrefabs: []
   despawnPassedDistance: 0
+--- !u!1 &834276128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 834276130}
+  - component: {fileID: 834276129}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &834276129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834276128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 4b53901183ec2a44386effaf595a7929, type: 2}
+--- !u!4 &834276130
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834276128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &879354098
 GameObject:
   m_ObjectHideFlags: 0
@@ -1130,6 +1221,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1246,6 +1338,50 @@ MonoBehaviour:
   introActiveOnStart: 0
   introYawDegrees: 225
   introHeightOffset: 0
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &964998139
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,7 +1608,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e0ecd2d7a849ffa4cbfba4ba4f5ea88e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1585,7 +1721,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1698,7 +1834,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e0ecd2d7a849ffa4cbfba4ba4f5ea88e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1805,7 +1941,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 2
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -1817,12 +1953,85 @@ MonoBehaviour:
   slowMoZoneEdgePadding: 3
   slowMoZonePreferFrontHalf: 0
   slowMoMinSegmentsBetween: 3
-  slowMoIncludeCenterLane: 1
+  slowMoIncludeCenterLane: 0
   slowMoCenterOrbitDirection: 1
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
+  slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  useNamedLaneCentersForSlowMo: 1
+  slowMoLeftLaneName: CenterLeft
+  slowMoRightLaneName: CenterRight
+--- !u!1001 &1128575757
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2099421865}
+    m_Modifications:
+    - target: {fileID: 3939722206356046718, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4978816779655408403, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_Name
+      value: npc_csl_00_character_02m_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.045006692
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.9499991
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.66924155
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6813491633293684931, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 7abbccc1768c86b45a9154112c04206f, type: 2}
+    m_RemovedComponents:
+    - {fileID: 3939722206356046718, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4978816779655408403, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1756436649}
+  m_SourcePrefab: {fileID: 100100000, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
 --- !u!1 &1216275426
 GameObject:
   m_ObjectHideFlags: 0
@@ -2335,6 +2544,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanM_Model
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
       propertyPath: m_Controller
       value: 
@@ -2792,7 +3005,7 @@ MonoBehaviour:
   coinLocalOffset: {x: 0, y: 1, z: 0}
   coinLocalScale: {x: 1, y: 0.1, z: 1}
   coinZeroRotation: 0
-  coinValue: 2
+  coinValue: 1
   enableSlowMoZone: 1
   slowMoZoneChance: 0.4
   slowMoZoneForwardRange: {x: 3, y: 9}
@@ -2804,12 +3017,86 @@ MonoBehaviour:
   slowMoZoneEdgePadding: 3
   slowMoZonePreferFrontHalf: 0
   slowMoMinSegmentsBetween: 3
-  slowMoIncludeCenterLane: 1
+  slowMoIncludeCenterLane: 0
   slowMoCenterOrbitDirection: 1
   showSlowMoVisual: 1
   slowMoVisualColor: {r: 0.2, g: 0.85, b: 1, a: 0.5}
   slowMoVisualHeight: 0.06
   slowMoVisualYOffset: -0.5
+  slowMoVisualMaterial: {fileID: 2100000, guid: fc4f48def223d63479166eb079bdf01f, type: 2}
+  useNamedLaneCentersForSlowMo: 1
+  slowMoLeftLaneName: CenterLeft
+  slowMoRightLaneName: CenterRight
+--- !u!1 &1756436647 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4978816779655408403, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+  m_PrefabInstance: {fileID: 1128575757}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1756436648 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5644030507746144681, guid: ce2548dbc81851b488075bf19a61322a, type: 3}
+  m_PrefabInstance: {fileID: 1128575757}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &1756436649
+SkinnedMeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756436647}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 3
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: 0}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_DirtyAABB: 0
 --- !u!1 &1833174121
 GameObject:
   m_ObjectHideFlags: 0
@@ -2940,7 +3227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2986,6 +3273,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 963194228}
+  - {fileID: 1756436648}
   - {fileID: 1701301937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3051,9 +3339,9 @@ MonoBehaviour:
   heartSize: 26
   heartSpacing: 6
   heartScale: 1
-  heartFullSprite: {fileID: 21300000, guid: 7e203055584d4f14887ff7cd542c6d46, type: 3}
+  heartFullSprite: {fileID: 21300000, guid: 903e9e53bfeef224b9c170b7b2a6b9b8, type: 3}
   heartEmptySprite: {fileID: 21300000, guid: 7e203055584d4f14887ff7cd542c6d46, type: 3}
-  heartFullColor: {r: 0.85, g: 0.12, b: 0.12, a: 1}
+  heartFullColor: {r: 0.24723008, g: 0.9433962, b: 0.048949808, a: 1}
   heartEmptyColor: {r: 0.2, g: 0.2, b: 0.2, a: 0.7}
   heartFlickerSeconds: 0.5
   heartFlickerInterval: 0.08
@@ -3071,3 +3359,4 @@ SceneRoots:
   - {fileID: 1363889107}
   - {fileID: 2088921594}
   - {fileID: 1216275428}
+  - {fileID: 834276130}

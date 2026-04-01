@@ -7,6 +7,10 @@ public class SlowMoZone : MonoBehaviour
     [SerializeField] private bool autoFindCameraShift = true;
     [SerializeField] private CameraSideShift cameraShift;
     [SerializeField] private float minActiveDuration = 1.0f;
+    [Header("Coin Multiplier")]
+    [SerializeField] private bool grantCoinMultiplier = true;
+    [SerializeField] private float coinMultiplier = 2f;
+    [SerializeField] private float coinMultiplierDuration = 10f;
 
     private float defaultFixedDelta;
     private int overlapCount;
@@ -47,6 +51,9 @@ public class SlowMoZone : MonoBehaviour
         {
             ActivateSlowMo();
         }
+
+        ApplyCoinMultiplier();
+        NotifyCoinMultiplierPopup();
 
         minActiveUntil = Time.unscaledTime + minActiveDuration;
         pendingDeactivate = false;
@@ -150,6 +157,27 @@ public class SlowMoZone : MonoBehaviour
                 cameraShift.SetSideActive(true, cameraSideSign);
                 cameraShift.SetOrbitActive(false, cameraOrbitSign);
             }
+        }
+    }
+
+    private void ApplyCoinMultiplier()
+    {
+        if (!grantCoinMultiplier || coinMultiplier <= 1f || coinMultiplierDuration <= 0f)
+        {
+            return;
+        }
+
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ApplyCoinMultiplier(coinMultiplier, coinMultiplierDuration);
+        }
+    }
+
+    private void NotifyCoinMultiplierPopup()
+    {
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ShowCoinMultiplierPopup(2f);
         }
     }
 

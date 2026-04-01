@@ -22,14 +22,6 @@ public class EndlessTrackLooper : MonoBehaviour
     [SerializeField] private bool autoCreateCameraSideShift = true;
     [SerializeField] private List<Transform> segments = new List<Transform>();
 
-    [Header("Visual - Distance Fog")]
-    [SerializeField] private bool applyFog = true;
-    [SerializeField] private FogMode fogMode = FogMode.Linear;
-    [SerializeField] private Color fogColor = new Color(0.75f, 0.8f, 0.88f, 1f);
-    [SerializeField] private float fogStartDistance = 45f;
-    [SerializeField] private float fogEndDistance = 130f;
-    [SerializeField] private float fogDensity = 0.012f;
-
     private readonly System.Random rng = new System.Random();
     private Vector3 moveAxis;
     private Vector3 spawnAxis;
@@ -103,7 +95,6 @@ public class EndlessTrackLooper : MonoBehaviour
 
     private void Start()
     {
-        ApplyFogSettings();
         AlignSegmentsFromStart();
     }
 
@@ -205,28 +196,6 @@ public class EndlessTrackLooper : MonoBehaviour
         return best;
     }
 
-
-    private void ApplyFogSettings()
-    {
-        RenderSettings.fog = applyFog;
-        if (!applyFog)
-        {
-            return;
-        }
-
-        RenderSettings.fogColor = fogColor;
-        RenderSettings.fogMode = fogMode;
-
-        if (fogMode == FogMode.Linear)
-        {
-            RenderSettings.fogStartDistance = fogStartDistance;
-            RenderSettings.fogEndDistance = fogEndDistance;
-        }
-        else
-        {
-            RenderSettings.fogDensity = fogDensity;
-        }
-    }
 
     private void EnsureTrackSegments()
     {
